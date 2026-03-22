@@ -47,11 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        gold: {
-          DEFAULT: "hsl(var(--gold))",
-          light: "hsl(var(--gold-light))",
-          dark: "hsl(var(--gold-dark))",
-          muted: "hsl(var(--gold-muted))",
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          light: "hsl(var(--brand-light))",
+          dark: "hsl(var(--brand-dark))",
+          muted: "hsl(var(--brand-muted))",
+        },
+        navy: {
+          DEFAULT: "hsl(var(--navy))",
+          light: "hsl(var(--navy-light))",
+          dark: "hsl(var(--navy-dark))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -90,9 +95,9 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
-        "pulse-gold": {
-          "0%, 100%": { boxShadow: "0 0 0 0 hsla(43, 72%, 50%, 0.3)" },
-          "50%": { boxShadow: "0 0 0 8px hsla(43, 72%, 50%, 0)" },
+        "pulse-brand": {
+          "0%, 100%": { boxShadow: "0 0 0 0 hsla(20, 92%, 47%, 0.3)" },
+          "50%": { boxShadow: "0 0 0 8px hsla(20, 92%, 47%, 0)" },
         },
       },
       animation: {

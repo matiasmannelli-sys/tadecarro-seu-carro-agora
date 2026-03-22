@@ -3,10 +3,8 @@ import logo from "@/assets/logo.png";
 import carImage from "@/assets/car-default.png";
 
 const cars = [
-  { model: "Toyota Corolla GLi 2024", price: "R$ 1.890/mês", category: "Sedan" },
-  { model: "Hyundai HB20 1.0 2024", price: "R$ 1.490/mês", category: "Hatch" },
-  { model: "Chevrolet Onix Plus 2024", price: "R$ 1.590/mês", category: "Sedan" },
-  { model: "Fiat Argo 1.0 2024", price: "R$ 1.390/mês", category: "Hatch" },
+  { model: "Uber X", price: "R$ 875/semana", description: "HB20, Onix, Argo" },
+  { model: "Confort", price: "R$ 990/semana", description: "Corolla, Civic, Cruze" },
 ];
 
 const WHATSAPP_COMMERCIAL = "5511999999999";
@@ -22,7 +20,7 @@ const PublicPage = () => {
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border/50">
         <img src={logo} alt="TaDeCarro" className="h-8" />
-        <a href="/login" className="text-sm font-medium text-gold active:scale-95 transition-transform">
+        <a href="/login" className="text-sm font-medium text-brand active:scale-95 transition-transform">
           Entrar
         </a>
       </header>
@@ -30,7 +28,7 @@ const PublicPage = () => {
       {/* Hero */}
       <section className="flex flex-col items-center text-center px-6 pt-8 pb-4">
         <h1 className="text-2xl font-bold text-foreground leading-tight" style={{ lineHeight: "1.2" }}>
-          Seu carro para rodar no <span className="gold-text-gradient">app está aqui</span>
+          Seu carro para rodar no <span className="brand-text-gradient">app está aqui</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-2 max-w-xs">
           Alugue um carro e ao final do contrato ele é seu. Sem entrada, sem burocracia.
@@ -40,17 +38,17 @@ const PublicPage = () => {
         </div>
       </section>
 
-      {/* Cars */}
+      {/* Categories */}
       <section className="px-4 pb-6">
-        <h2 className="text-base font-semibold text-foreground mb-3">Carros disponíveis</h2>
+        <h2 className="text-base font-semibold text-foreground mb-3">Categorias disponíveis</h2>
         <div className="space-y-3">
           {cars.map((car) => (
             <div key={car.model} className="glass-card p-4 flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-foreground">{car.model}</p>
-                <p className="text-xs text-muted-foreground">{car.category}</p>
+                <p className="text-xs text-muted-foreground">{car.description}</p>
               </div>
-              <span className="text-sm font-bold text-gold">{car.price}</span>
+              <span className="text-sm font-bold text-brand">{car.price}</span>
             </div>
           ))}
         </div>
@@ -60,7 +58,7 @@ const PublicPage = () => {
       <div className="sticky bottom-0 p-4 bg-background/90 backdrop-blur-md border-t border-border/50">
         <button
           onClick={openWhatsApp}
-          className="w-full py-3.5 rounded-xl gold-gradient text-primary-foreground font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.97] transition-transform"
+          className="w-full py-3.5 rounded-xl brand-gradient text-primary-foreground font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.97] transition-transform"
         >
           <MessageCircle className="w-5 h-5" />
           Quero meu carro!

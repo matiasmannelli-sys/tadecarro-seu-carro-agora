@@ -21,7 +21,6 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Mock login — will integrate with Supabase auth
     setTimeout(() => {
       setLoading(false);
       navigate("/home");
@@ -42,7 +41,7 @@ const LoginPage = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome"
-                className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/50"
+                className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand/50"
                 required
               />
             </div>
@@ -56,7 +55,7 @@ const LoginPage = () => {
               onChange={(e) => setCpf(formatCpf(e.target.value))}
               placeholder="000.000.000-00"
               inputMode="numeric"
-              className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/50"
+              className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand/50"
               required
             />
           </div>
@@ -68,7 +67,7 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/50"
+              className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand/50"
               required
             />
           </div>
@@ -76,7 +75,7 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl gold-gradient text-primary-foreground font-semibold text-sm active:scale-[0.97] transition-transform disabled:opacity-60"
+            className="w-full py-3.5 rounded-xl brand-gradient text-primary-foreground font-semibold text-sm active:scale-[0.97] transition-transform disabled:opacity-60"
           >
             {loading ? "Entrando..." : isSignup ? "Criar conta" : "Entrar"}
           </button>
@@ -91,7 +90,7 @@ const LoginPage = () => {
 
         <a
           href="/"
-          className="block text-center text-xs text-gold mt-2 active:scale-95 transition-transform"
+          className="block text-center text-xs text-brand mt-2 active:scale-95 transition-transform"
         >
           ← Voltar para vitrine
         </a>
