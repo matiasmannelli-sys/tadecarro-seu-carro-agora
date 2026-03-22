@@ -1,20 +1,20 @@
-import carImage from "@/assets/car-default.png";
+import carImage from "@/assets/car-argo.png";
 
 const CarDisplay = () => {
   return (
-    <div className="flex flex-col items-center justify-center py-6 px-4">
+    <div className="flex flex-col items-center justify-center py-4 px-4">
       <div className="relative">
         <div className="animate-float car-glow">
           <img
             src={carImage}
-            alt="Seu carro"
+            alt="Fiat Argo Branco"
             className="w-72 h-auto max-w-full object-contain"
             draggable={false}
           />
         </div>
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-48 h-4 bg-gold/10 rounded-full blur-xl" />
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-48 h-4 bg-brand/10 rounded-full blur-xl" />
       </div>
-      <p className="text-xs text-muted-foreground mt-2">Toyota Corolla 2024 — Preto</p>
+      <p className="text-xs text-muted-foreground mt-2">Fiat Argo Branco — Confort</p>
     </div>
   );
 };
