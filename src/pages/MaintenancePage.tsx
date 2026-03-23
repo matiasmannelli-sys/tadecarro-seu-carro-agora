@@ -1,9 +1,11 @@
-import { Wrench, CheckCircle2, AlertTriangle, Camera, Clock } from "lucide-react";
+import { Wrench, CheckCircle2, AlertTriangle, Camera, Clock, MessageCircle } from "lucide-react";
 
+const WHATSAPP = "5547999999999";
 const currentKm = 47600;
 const nextRevisionKm = 50000;
 const kmToNext = nextRevisionKm - currentKm;
 const kmProgress = Math.round((currentKm / nextRevisionKm) * 100);
+const isCloseToRevision = kmToNext < 1000;
 
 const checklist = [
   { item: "Óleo do motor", status: "ok" as const },
@@ -17,12 +19,26 @@ const maintenanceHistory = [
 ];
 
 const MaintenancePage = () => {
+  const openWA = (msg: string) => {
+    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
   return (
     <div className="px-4 py-4">
       <div className="flex items-center gap-2 mb-4">
         <Wrench className="w-5 h-5 text-brand" />
         <h1 className="text-lg font-bold text-foreground">Manutenção</h1>
       </div>
+
+      {/* Urgent warning */}
+      {isCloseToRevision && (
+        <div className="bg-brand/15 border border-brand/40 rounded-xl p-3 mb-4 flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 text-brand shrink-0" />
+          <span className="text-xs font-semibold text-brand">
+            Atenção: faltam apenas {kmToNext.toLocaleString("pt-BR")} km para a próxima revisão!
+          </span>
+        </div>
+      )}
 
       {/* Next revision */}
       <div className="glass-card p-5 mb-4 border-brand/30">
@@ -43,6 +59,15 @@ const MaintenancePage = () => {
           <span>{nextRevisionKm.toLocaleString("pt-BR")} km</span>
         </div>
       </div>
+
+      {/* Schedule maintenance button */}
+      <button
+        onClick={() => openWA("Olá, sou João Silva e quero agendar uma manutenção do meu Fiat Argo")}
+        className="w-full py-3 text-sm font-semibold rounded-xl brand-gradient text-primary-foreground active:scale-[0.96] transition-transform flex items-center justify-center gap-2 mb-5"
+      >
+        <Wrench className="w-4 h-4" />
+        Agendar manutenção
+      </button>
 
       {/* Checklist */}
       <h2 className="text-sm font-semibold text-foreground mb-3">Checklist do veículo</h2>

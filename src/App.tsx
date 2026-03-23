@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import PublicPage from "./pages/PublicPage";
 import LoginPage from "./pages/LoginPage";
 import AppLayout from "./components/AppLayout";
 import HomePage from "./pages/HomePage";
@@ -13,6 +12,7 @@ import FinancialPage from "./pages/FinancialPage";
 import ProfilePage from "./pages/ProfilePage";
 import MaintenancePage from "./pages/MaintenancePage";
 import NotFound from "./pages/NotFound";
+import { Navigate } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +23,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<PublicPage />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route element={<AppLayout />}>
             <Route path="/home" element={<HomePage />} />
