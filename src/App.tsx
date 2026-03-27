@@ -20,6 +20,8 @@ import ProdutoPage from "./pages/loja/ProdutoPage";
 import CarrinhoPage from "./pages/loja/CarrinhoPage";
 import CheckoutPage from "./pages/loja/CheckoutPage";
 import ConfirmacaoPage from "./pages/loja/ConfirmacaoPage";
+import LoginPlacaPage from "./pages/loja/LoginPlacaPage";
+import CadastroPage from "./pages/loja/CadastroPage";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
             <Route path="carrinho" element={<CarrinhoPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="confirmacao" element={<ConfirmacaoPage />} />
+            <Route path="login" element={<LoginPlacaPage />} />
+            <Route path="cadastro" element={<CadastroPage />} />
           </Route>
 
           {/* App interno */}

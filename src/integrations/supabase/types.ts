@@ -14,7 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      customers: {
+        Row: {
+          bairro: string | null
+          cep: string | null
+          cidade: string | null
+          complemento: string | null
+          cpf: string
+          created_at: string | null
+          email: string | null
+          endereco: string | null
+          id: string
+          nome: string
+          numero: string | null
+          placa: string
+          whatsapp: string | null
+        }
+        Insert: {
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
+          complemento?: string | null
+          cpf: string
+          created_at?: string | null
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome: string
+          numero?: string | null
+          placa: string
+          whatsapp?: string | null
+        }
+        Update: {
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
+          complemento?: string | null
+          cpf?: string
+          created_at?: string | null
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome?: string
+          numero?: string | null
+          placa?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          bairro: string | null
+          cep: string | null
+          cidade: string | null
+          complemento: string | null
+          created_at: string | null
+          customer_cpf: string | null
+          customer_email: string | null
+          customer_id: string | null
+          customer_nome: string | null
+          customer_placa: string | null
+          customer_whatsapp: string | null
+          endereco_entrega: string | null
+          id: string
+          items: Json
+          numero: string | null
+          observacoes: string | null
+          status: string
+          total: number
+        }
+        Insert: {
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
+          complemento?: string | null
+          created_at?: string | null
+          customer_cpf?: string | null
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_nome?: string | null
+          customer_placa?: string | null
+          customer_whatsapp?: string | null
+          endereco_entrega?: string | null
+          id?: string
+          items?: Json
+          numero?: string | null
+          observacoes?: string | null
+          status?: string
+          total?: number
+        }
+        Update: {
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
+          complemento?: string | null
+          created_at?: string | null
+          customer_cpf?: string | null
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_nome?: string | null
+          customer_placa?: string | null
+          customer_whatsapp?: string | null
+          endereco_entrega?: string | null
+          id?: string
+          items?: Json
+          numero?: string | null
+          observacoes?: string | null
+          status?: string
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

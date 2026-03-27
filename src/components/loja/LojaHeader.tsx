@@ -1,64 +1,54 @@
-import { ShoppingCart, Menu, X } from "lucide-react";
-import { useCart } from "@/contexts/CartContext";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { ShoppingCart, User, LogOut } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useCustomer } from "@/contexts/CustomerContext";
 
 const LojaHeader = () => {
   const { itemCount } = useCart();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { customer, isLoggedIn, logout } = useCustomer();
 
   return (
-    <header className="sticky top-0 z-50 bg-[#090A2E] border-b border-white/10">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-[#090A2E]/95 backdrop-blur-md border-b border-white/5">
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/loja" className="flex items-center gap-2">
-          <span className="text-xl font-extrabold text-[#F6F5F3] tracking-tight">
+          <span className="text-lg font-extrabold text-[#F6F5F3]">
             Tá de <span className="text-[#E5541C]">Carro</span>
           </span>
         </Link>
 
         <div className="flex items-center gap-3">
+          {isLoggedIn ? (
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-[#F6F5F3]/50 hidden sm:block">
+                {customer?.nome?.split(" ")[0]}
+              </span>
+              <button onClick={logout} className="text-[#F6F5F3]/40 hover:text-[#F6F5F3] transition-colors">
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/loja/login"
+              className="flex items-center gap-1 text-[#F6F5F3]/50 hover:text-[#F6F5F3] text-xs transition-colors"
+            >
+              <User className="w-4 h-4" />
+              <span className="hidden sm:inline">Entrar</span>
+            </Link>
+          )}
+
           <Link
             to="/loja/carrinho"
-            className="relative p-2 rounded-xl hover:bg-white/10 transition-colors"
+            className="relative flex items-center gap-1 text-[#F6F5F3]/70 hover:text-[#F6F5F3] transition-colors"
           >
-            <ShoppingCart className="w-5 h-5 text-[#F6F5F3]" />
+            <ShoppingCart className="w-5 h-5" />
             {itemCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#E5541C] text-[#F6F5F3] text-[10px] font-bold flex items-center justify-center">
+              <span className="absolute -top-1.5 -right-1.5 bg-[#E5541C] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {itemCount}
               </span>
             )}
           </Link>
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 rounded-xl hover:bg-white/10 transition-colors md:hidden"
-          >
-            {menuOpen ? (
-              <X className="w-5 h-5 text-[#F6F5F3]" />
-            ) : (
-              <Menu className="w-5 h-5 text-[#F6F5F3]" />
-            )}
-          </button>
         </div>
       </div>
-
-      {menuOpen && (
-        <nav className="md:hidden bg-[#090A2E] border-t border-white/10 px-4 py-3 space-y-2">
-          <Link
-            to="/loja"
-            onClick={() => setMenuOpen(false)}
-            className="block py-2 text-sm text-[#F6F5F3]/80 hover:text-[#E5541C] transition-colors"
-          >
-            Produtos
-          </Link>
-          <Link
-            to="/loja/carrinho"
-            onClick={() => setMenuOpen(false)}
-            className="block py-2 text-sm text-[#F6F5F3]/80 hover:text-[#E5541C] transition-colors"
-          >
-            Carrinho
-          </Link>
-        </nav>
-      )}
     </header>
   );
 };
