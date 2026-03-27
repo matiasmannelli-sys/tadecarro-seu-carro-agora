@@ -35,8 +35,17 @@ const CadastroPage = () => {
   const onSubmit = async (data: CadastroForm) => {
     setSubmitting(true);
     const customer = await createOrUpdateCustomer({
-      ...data,
+      nome: data.nome,
+      cpf: data.cpf,
+      email: data.email,
+      whatsapp: data.whatsapp,
+      cep: data.cep,
+      endereco: data.endereco,
+      numero: data.numero,
       complemento: data.complemento || "",
+      bairro: data.bairro,
+      cidade: data.cidade,
+      placa: data.placa,
     });
     setSubmitting(false);
     if (customer) {
