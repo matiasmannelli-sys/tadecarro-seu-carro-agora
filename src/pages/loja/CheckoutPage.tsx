@@ -2,16 +2,20 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useCustomer } from "@/contexts/CustomerContext";
 import { formatCurrency, getInstallmentPrice } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 const checkoutSchema = z.object({
   nome: z.string().min(3, "Informe seu nome completo"),
   cpf: z.string().min(11, "CPF inválido"),
-  telefone: z.string().min(10, "Telefone inválido"),
+  whatsapp: z.string().min(10, "WhatsApp inválido"),
   email: z.string().email("E-mail inválido"),
+  placa: z.string().min(7, "Informe a placa do veículo"),
   cep: z.string().min(8, "CEP inválido"),
   endereco: z.string().min(3, "Informe o endereço"),
   numero: z.string().min(1, "Informe o número"),
@@ -26,6 +30,7 @@ type CheckoutForm = z.infer<typeof checkoutSchema>;
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
+  const { customer, createOrUpdateCustomer } = useCustomer();
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -35,10 +40,17 @@ const CheckoutPage = () => {
   } = useForm<CheckoutForm>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      nome: "João Silva",
-      cpf: "000.000.000-00",
-      telefone: "(47) 99999-9999",
-      email: "joao@email.com",
+      nome: customer?.nome || "",
+      cpf: customer?.cpf || "",
+      whatsapp: customer?.whatsapp || "",
+      email: customer?.email || "",
+      placa: customer?.placa || "",
+      cep: customer?.cep || "",
+      endereco: customer?.endereco || "",
+      numero: customer?.numero || "",
+      complemento: customer?.complemento || "",
+      bairro: customer?.bairro || "",
+      cidade: customer?.cidade || "",
     },
   });
 
@@ -46,20 +58,73 @@ const CheckoutPage = () => {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
         <p className="text-sm text-[#F6F5F3]/50 mb-4">Seu carrinho está vazio.</p>
-        <Link to="/loja" className="text-[#E5541C] text-sm font-semibold">
-          Ver produtos
-        </Link>
+        <Link to="/loja" className="text-[#E5541C] text-sm font-semibold">Ver produtos</Link>
       </div>
     );
   }
 
   const totalInstallment = getInstallmentPrice(totalPrice, 24);
 
-  const onSubmit = async (_data: CheckoutForm) => {
+  const onSubmit = async (data: CheckoutForm) => {
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    clearCart();
-    navigate("/loja/confirmacao");
+    try {
+      // 1. Create/update customer (auto-creates account)
+      const customerResult = await createOrUpdateCustomer({
+        nome: data.nome,
+        cpf: data.cpf,
+        email: data.email,
+        whatsapp: data.whatsapp,
+        endereco: data.endereco,
+        numero: data.numero,
+        complemento: data.complemento || "",
+        bairro: data.bairro,
+        cidade: data.cidade,
+        cep: data.cep,
+        placa: data.placa,
+      });
+
+      // 2. Save order to database
+      const orderItems = items.map(({ product, quantity }) => ({
+        sku: product.sku,
+        name: product.name,
+        price: product.price,
+        quantity,
+        subtotal: product.price * quantity,
+      }));
+
+      const { error: orderError } = await supabase.from("orders").insert({
+        customer_id: customerResult?.id || null,
+        customer_nome: data.nome,
+        customer_cpf: data.cpf,
+        customer_email: data.email,
+        customer_whatsapp: data.whatsapp,
+        customer_placa: data.placa.toUpperCase().replace(/[^A-Z0-9]/g, ""),
+        endereco_entrega: data.endereco,
+        numero: data.numero,
+        complemento: data.complemento || null,
+        bairro: data.bairro,
+        cidade: data.cidade,
+        cep: data.cep,
+        observacoes: data.observacoes || null,
+        total: totalPrice,
+        status: "pendente",
+        items: orderItems,
+      });
+
+      if (orderError) {
+        console.error("Order error:", orderError);
+        toast.error("Erro ao salvar pedido. Tente novamente.");
+        setSubmitting(false);
+        return;
+      }
+
+      clearCart();
+      navigate("/loja/confirmacao");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro inesperado. Tente novamente.");
+      setSubmitting(false);
+    }
   };
 
   const inputClass =
@@ -78,7 +143,7 @@ const CheckoutPage = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Personal data */}
         <section>
-          <h2 className="text-xs font-bold text-[#E5541C] uppercase tracking-wider mb-3">Dados pessoais</h2>
+          <h2 className="text-xs font-bold text-[#E5541C] uppercase tracking-wider mb-3">Seus dados</h2>
           <div className="space-y-3">
             <div>
               <label className={labelClass}>Nome completo</label>
@@ -92,15 +157,20 @@ const CheckoutPage = () => {
                 {errors.cpf && <p className={errorClass}>{errors.cpf.message}</p>}
               </div>
               <div>
-                <label className={labelClass}>Telefone</label>
-                <input {...register("telefone")} className={inputClass} />
-                {errors.telefone && <p className={errorClass}>{errors.telefone.message}</p>}
+                <label className={labelClass}>WhatsApp</label>
+                <input {...register("whatsapp")} className={inputClass} placeholder="(00) 00000-0000" />
+                {errors.whatsapp && <p className={errorClass}>{errors.whatsapp.message}</p>}
               </div>
             </div>
             <div>
               <label className={labelClass}>E-mail</label>
               <input {...register("email")} type="email" className={inputClass} />
               {errors.email && <p className={errorClass}>{errors.email.message}</p>}
+            </div>
+            <div>
+              <label className={labelClass}>Placa do veículo</label>
+              <input {...register("placa")} className={`${inputClass} uppercase`} placeholder="ABC1D23" maxLength={7} />
+              {errors.placa && <p className={errorClass}>{errors.placa.message}</p>}
             </div>
           </div>
         </section>
@@ -190,7 +260,7 @@ const CheckoutPage = () => {
           disabled={submitting}
           className="w-full py-3.5 rounded-xl text-sm font-bold bg-[#E5541C] text-white active:scale-95 transition-all shadow-lg shadow-[#E5541C]/25 disabled:opacity-60"
         >
-          {submitting ? "Processando..." : "Confirmar pedido"}
+          {submitting ? "Salvando pedido..." : "Confirmar pedido"}
         </button>
       </form>
     </div>

@@ -10,8 +10,8 @@ const LojaHomePage = () => {
 
   const filtered =
     activeCategory === "todos"
-      ? products
-      : products.filter((p) => p.category === activeCategory);
+      ? products.filter((p) => p.available)
+      : products.filter((p) => p.category === activeCategory && p.available);
 
   return (
     <>
