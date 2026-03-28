@@ -129,9 +129,9 @@ const CheckoutPage = () => {
         _cidade: data.cidade,
         _observacoes: data.observacoes || null,
         _items: orderItems,
-        _total: totalPrice,
+        _total: finalTotal,
         _credit_limit: totalCredit,
-        _accept_pix_excedente: !!data.acceptPixExcedente,
+        _accept_pix_excedente: payAVista ? false : !!data.acceptPixExcedente,
       });
 
       if (orderError) {
