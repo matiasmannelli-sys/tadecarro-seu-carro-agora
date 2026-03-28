@@ -12,6 +12,7 @@ import FinancialPage from "./pages/FinancialPage";
 import ProfilePage from "./pages/ProfilePage";
 import MaintenancePage from "./pages/MaintenancePage";
 import NotFound from "./pages/NotFound";
+import AdminPage from "./pages/AdminPage";
 
 // Landing page / e-commerce
 import LojaLayout from "./pages/loja/LojaLayout";
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/maintenance" element={<MaintenancePage />} />
           </Route>
 
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
