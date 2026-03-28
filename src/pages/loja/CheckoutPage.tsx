@@ -145,14 +145,15 @@ const CheckoutPage = () => {
       navigate("/loja/confirmacao", {
         state: {
           orderId,
-          creditExceeded,
-          paymentMethod: creditExceeded > 0 ? "credito_pix" : "boleto_semanal",
+          creditExceeded: payAVista ? 0 : creditExceeded,
+          paymentMethod: payAVista ? "a_vista" : (creditExceeded > 0 ? "credito_pix" : "boleto_semanal"),
           customerName: data.nome,
           cartItems: items.map(({ product, quantity }) => ({
             name: product.name,
             quantity,
           })),
-          totalPrice,
+          totalPrice: finalTotal,
+          payAVista,
         },
       });
     } catch (err) {
