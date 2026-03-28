@@ -10,6 +10,25 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
+const maskCPF = (v: string) =>
+  v.replace(/\D/g, "").slice(0, 11)
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+const maskPhone = (v: string) => {
+  const d = v.replace(/\D/g, "").slice(0, 11);
+  if (d.length <= 2) return d.replace(/(\d{2})/, "($1");
+  if (d.length <= 7) return d.replace(/(\d{2})(\d+)/, "($1) $2");
+  return d.replace(/(\d{2})(\d{5})(\d+)/, "($1) $2-$3");
+};
+
+const maskCEP = (v: string) =>
+  v.replace(/\D/g, "").slice(0, 8).replace(/(\d{5})(\d+)/, "$1-$2");
+
+const maskPlaca = (v: string) =>
+  v.replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 7);
+
 const checkoutSchema = z.object({
   nome: z.string().min(3, "Informe seu nome completo"),
   cpf: z.string().min(11, "CPF inválido"),
