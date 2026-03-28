@@ -95,9 +95,9 @@ const CheckoutPage = () => {
     );
   }
 
-  const totalWeekly = getWeeklyPrice(totalPrice);
-  const creditApplied = Math.min(totalPrice, totalCredit);
-  const requiresPixAcceptance = creditExceeded > 0;
+  const totalWeekly = getWeeklyPrice(finalTotal);
+  const creditApplied = Math.min(finalTotal, totalCredit);
+  const requiresPixAcceptance = !payAVista && creditExceeded > 0;
 
   const onSubmit = async (data: CheckoutForm) => {
     if (requiresPixAcceptance && !data.acceptPixExcedente) {
