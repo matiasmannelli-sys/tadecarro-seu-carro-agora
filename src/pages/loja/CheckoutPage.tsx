@@ -47,6 +47,8 @@ const checkoutSchema = z.object({
 
 const stripMask = (v: string) => v.replace(/\D/g, "");
 
+type CheckoutForm = z.infer<typeof checkoutSchema>;
+
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart, totalCredit, creditExceeded } = useCart();
