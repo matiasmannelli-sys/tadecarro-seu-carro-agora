@@ -8,10 +8,7 @@ const ConfirmacaoPage = () => {
   const location = useLocation();
   const creditExceeded = Number(location.state?.creditExceeded || 0);
   const hasPix = creditExceeded > 0;
-  const whatsappMsg = encodeURIComponent(
-    "Olá, acabei de fazer um pedido na loja TaDeCarro e quero confirmar meu atendimento."
-  );
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMsg}`;
+  const whatsappUrl = WHATSAPP_URL;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
