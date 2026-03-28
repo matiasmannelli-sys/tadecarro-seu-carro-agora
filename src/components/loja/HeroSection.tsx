@@ -43,7 +43,7 @@ const HeroSection = () => {
         {/* Trust badges */}
         <div className="flex gap-4 mt-8 justify-center flex-wrap">
           {[
-            { icon: CreditCard, text: "Até 24x" },
+            { icon: CreditCard, text: "Por semana" },
             { icon: Zap, text: "Sem burocracia" },
             { icon: Sparkles, text: "Aprovado na hora" },
           ].map((badge) => (

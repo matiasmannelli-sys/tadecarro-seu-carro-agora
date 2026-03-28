@@ -19,7 +19,7 @@ const steps = [
   {
     icon: Receipt,
     title: "Pague no boleto",
-    desc: "O valor entra no seu boleto semanal, junto da parcela do carro.",
+    desc: "O valor entra no seu boleto semanal, junto do valor do carro.",
   },
 ];
 

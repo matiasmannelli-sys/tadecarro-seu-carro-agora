@@ -67,7 +67,7 @@ const ProdutoPage = () => {
             {formatCurrency(product.price)}
           </div>
             <div className="mb-0.5 text-2xl font-extrabold text-primary">
-            {product.installments}x de {formatCurrency(installment)}
+            {formatWeekly(product.price)}
           </div>
             <div className="text-xs text-muted-foreground">
             ou {formatCurrency(product.price)} à vista

@@ -100,7 +100,7 @@ const CarrinhoPage = () => {
           <span className="text-primary">{formatCurrency(totalPrice)}</span>
         </div>
         <div className="mb-3 text-right text-[10px] text-muted-foreground">
-          ou 24x de {formatCurrency(totalInstallment)}
+          ou {formatCurrency(totalWeekly)}/semana
         </div>
         <div className="border-t border-border/60 pt-2 text-[10px]">
           {creditExceeded > 0 ? (

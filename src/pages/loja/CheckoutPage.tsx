@@ -311,7 +311,7 @@ const CheckoutPage = () => {
             </div>
           ) : (
             <p className="mt-2 text-[10px] leading-snug text-muted-foreground">
-              O valor será incorporado à sua cobrança recorrente (boleto semanal) junto da parcela do carro.
+              O valor será incorporado à sua cobrança recorrente (boleto semanal) junto do valor do carro.
             </p>
           )}
         </section>
