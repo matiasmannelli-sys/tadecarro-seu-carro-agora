@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { formatCurrency, getInstallmentPrice } from "@/data/products";
+import { formatCurrency, formatWeekly, getWeeklyPrice } from "@/data/products";
 import CreditBar from "@/components/loja/CreditBar";
 
 const CarrinhoPage = () => {
