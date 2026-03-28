@@ -10,13 +10,32 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
+const maskCPF = (v: string) =>
+  v.replace(/\D/g, "").slice(0, 11)
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+const maskPhone = (v: string) => {
+  const d = v.replace(/\D/g, "").slice(0, 11);
+  if (d.length <= 2) return d.replace(/(\d{2})/, "($1");
+  if (d.length <= 7) return d.replace(/(\d{2})(\d+)/, "($1) $2");
+  return d.replace(/(\d{2})(\d{5})(\d+)/, "($1) $2-$3");
+};
+
+const maskCEP = (v: string) =>
+  v.replace(/\D/g, "").slice(0, 8).replace(/(\d{5})(\d+)/, "$1-$2");
+
+const maskPlaca = (v: string) =>
+  v.replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 7);
+
 const checkoutSchema = z.object({
   nome: z.string().min(3, "Informe seu nome completo"),
-  cpf: z.string().min(11, "CPF inválido"),
-  whatsapp: z.string().min(10, "WhatsApp inválido"),
+  cpf: z.string().refine(v => v.replace(/\D/g, "").length === 11, "CPF inválido"),
+  whatsapp: z.string().refine(v => v.replace(/\D/g, "").length >= 10, "WhatsApp inválido"),
   email: z.string().email("E-mail inválido"),
   placa: z.string().min(7, "Informe a placa do veículo"),
-  cep: z.string().min(8, "CEP inválido"),
+  cep: z.string().refine(v => v.replace(/\D/g, "").length === 8, "CEP inválido"),
   endereco: z.string().min(3, "Informe o endereço"),
   numero: z.string().min(1, "Informe o número"),
   complemento: z.string().optional(),
@@ -25,6 +44,8 @@ const checkoutSchema = z.object({
   observacoes: z.string().optional(),
   acceptPixExcedente: z.boolean().optional(),
 });
+
+const stripMask = (v: string) => v.replace(/\D/g, "");
 
 type CheckoutForm = z.infer<typeof checkoutSchema>;
 
@@ -37,16 +58,17 @@ const CheckoutPage = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<CheckoutForm>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
       nome: customer?.nome || "",
-      cpf: customer?.cpf || "",
-      whatsapp: customer?.whatsapp || "",
+      cpf: customer?.cpf ? maskCPF(customer.cpf) : "",
+      whatsapp: customer?.whatsapp ? maskPhone(customer.whatsapp) : "",
       email: customer?.email || "",
-      placa: customer?.placa || "",
-      cep: customer?.cep || "",
+      placa: customer?.placa ? maskPlaca(customer.placa) : "",
+      cep: customer?.cep ? maskCEP(customer.cep) : "",
       endereco: customer?.endereco || "",
       numero: customer?.numero || "",
       complemento: customer?.complemento || "",
@@ -55,6 +77,13 @@ const CheckoutPage = () => {
       acceptPixExcedente: false,
     },
   });
+
+  const handleMaskedChange = (field: keyof CheckoutForm, mask: (v: string) => string) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const masked = mask(e.target.value);
+      e.target.value = masked;
+      setValue(field, masked, { shouldValidate: true });
+    };
 
   if (items.length === 0) {
     return (
@@ -87,11 +116,11 @@ const CheckoutPage = () => {
 
       const { data: orderId, error: orderError } = await (supabase as any).rpc("create_checkout_order", {
         _nome: data.nome,
-        _cpf: data.cpf,
+        _cpf: stripMask(data.cpf),
         _email: data.email,
-        _whatsapp: data.whatsapp,
+        _whatsapp: stripMask(data.whatsapp),
         _placa: data.placa,
-        _cep: data.cep,
+        _cep: stripMask(data.cep),
         _endereco: data.endereco,
         _numero: data.numero,
         _complemento: data.complemento || null,
@@ -155,12 +184,12 @@ const CheckoutPage = () => {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>CPF</label>
-                <input {...register("cpf")} className={inputClass} />
+                <input {...register("cpf")} onChange={handleMaskedChange("cpf", maskCPF)} className={inputClass} placeholder="000.000.000-00" inputMode="numeric" />
                 {errors.cpf && <p className={errorClass}>{errors.cpf.message}</p>}
               </div>
               <div>
                 <label className={labelClass}>WhatsApp</label>
-                <input {...register("whatsapp")} className={inputClass} placeholder="(00) 00000-0000" />
+                <input {...register("whatsapp")} onChange={handleMaskedChange("whatsapp", maskPhone)} className={inputClass} placeholder="(00) 00000-0000" inputMode="tel" />
                 {errors.whatsapp && <p className={errorClass}>{errors.whatsapp.message}</p>}
               </div>
             </div>
@@ -171,7 +200,7 @@ const CheckoutPage = () => {
             </div>
             <div>
               <label className={labelClass}>Placa do veículo</label>
-              <input {...register("placa")} className={`${inputClass} uppercase`} placeholder="ABC1D23" maxLength={7} />
+              <input {...register("placa")} onChange={handleMaskedChange("placa", maskPlaca)} className={`${inputClass} uppercase`} placeholder="ABC1D23" maxLength={7} />
               {errors.placa && <p className={errorClass}>{errors.placa.message}</p>}
             </div>
           </div>
@@ -184,7 +213,7 @@ const CheckoutPage = () => {
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2">
                 <label className={labelClass}>CEP</label>
-                <input {...register("cep")} className={inputClass} placeholder="00000-000" />
+                <input {...register("cep")} onChange={handleMaskedChange("cep", maskCEP)} className={inputClass} placeholder="00000-000" inputMode="numeric" />
                 {errors.cep && <p className={errorClass}>{errors.cep.message}</p>}
               </div>
             </div>
