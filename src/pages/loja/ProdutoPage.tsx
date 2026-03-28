@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Check, Truck, Shield } from "lucide-react";
-import { products, formatCurrency, getInstallmentPrice } from "@/data/products";
+import { products, formatCurrency, formatWeekly } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import CreditBar from "@/components/loja/CreditBar";
 import { useState } from "react";
