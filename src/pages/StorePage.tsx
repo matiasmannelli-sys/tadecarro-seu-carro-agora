@@ -12,7 +12,7 @@ import imgMaquinaLavar from "@/assets/product-maquina-lavar.png";
 import imgKwid from "@/assets/car-kwid.png";
 import imgArgo from "@/assets/car-argo.png";
 
-const WHATSAPP = "5547999999999";
+const WHATSAPP_URL = "https://wa.me/qr/FEIURWZ6B4QSG1";
 const CLIENT_NAME = "João Silva";
 const CONTRACT = "#1042";
 
@@ -38,8 +38,8 @@ const StorePage = () => {
   const [tab, setTab] = useState<Tab>("crediario");
   const availableCredit = 5000;
 
-  const openWA = (msg: string) => {
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+  const openWA = () => {
+    window.open(WHATSAPP_URL, "_blank");
   };
 
   return (
@@ -85,11 +85,7 @@ const StorePage = () => {
                 <span className="text-[10px] text-muted-foreground line-through">{product.price}</span>
                 <span className="text-xs text-brand font-semibold">{product.installment}</span>
                 <button
-                  onClick={() =>
-                    openWA(
-                      `Olá TaDeCarro, sou ${CLIENT_NAME} (Contrato ${CONTRACT}) e quero adquirir ${product.name} pelo crediário`
-                    )
-                  }
+                  onClick={() => openWA()}
                   className="w-full mt-1 py-1.5 text-[11px] font-medium rounded-lg brand-gradient text-primary-foreground active:scale-95 transition-transform flex items-center justify-center gap-1"
                 >
                   <MessageCircle className="w-3 h-3" />
@@ -115,9 +111,7 @@ const StorePage = () => {
                 </div>
               </div>
               <button
-                onClick={() =>
-                  openWA(`Olá, quero solicitar troca para categoria ${cat.name}. Cliente: ${CLIENT_NAME}, Contrato ${CONTRACT}`)
-                }
+                onClick={() => openWA()}
                 className="w-full py-2.5 text-xs font-medium rounded-xl bg-secondary text-foreground border border-border active:scale-95 transition-transform flex items-center justify-center gap-1"
               >
                 <MessageCircle className="w-3 h-3" />

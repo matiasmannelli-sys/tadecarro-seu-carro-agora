@@ -1,6 +1,6 @@
 import { Wrench, CheckCircle2, AlertTriangle, Camera, Clock, MessageCircle } from "lucide-react";
 
-const WHATSAPP = "5547999999999";
+const WHATSAPP_URL = "https://wa.me/qr/FEIURWZ6B4QSG1";
 const currentKm = 47600;
 const nextRevisionKm = 50000;
 const kmToNext = nextRevisionKm - currentKm;
@@ -19,8 +19,8 @@ const maintenanceHistory = [
 ];
 
 const MaintenancePage = () => {
-  const openWA = (msg: string) => {
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+  const openWA = () => {
+    window.open(WHATSAPP_URL, "_blank");
   };
 
   return (
@@ -62,7 +62,7 @@ const MaintenancePage = () => {
 
       {/* Schedule maintenance button */}
       <button
-        onClick={() => openWA("Olá, sou João Silva e quero agendar uma manutenção do meu Fiat Argo")}
+        onClick={() => openWA()}
         className="w-full py-3 text-sm font-semibold rounded-xl brand-gradient text-primary-foreground active:scale-[0.96] transition-transform flex items-center justify-center gap-2 mb-5"
       >
         <Wrench className="w-4 h-4" />

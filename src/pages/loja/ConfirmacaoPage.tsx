@@ -2,16 +2,13 @@ import { Link, useLocation } from "react-router-dom";
 import { CheckCircle2, MessageCircle, ShoppingBag } from "lucide-react";
 import { formatCurrency } from "@/data/products";
 
-const WHATSAPP_NUMBER = "5547999999999";
+const WHATSAPP_URL = "https://wa.me/qr/FEIURWZ6B4QSG1";
 
 const ConfirmacaoPage = () => {
   const location = useLocation();
   const creditExceeded = Number(location.state?.creditExceeded || 0);
   const hasPix = creditExceeded > 0;
-  const whatsappMsg = encodeURIComponent(
-    "Olá, acabei de fazer um pedido na loja TaDeCarro e quero confirmar meu atendimento."
-  );
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMsg}`;
+  const whatsappUrl = WHATSAPP_URL;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
@@ -40,7 +37,7 @@ const ConfirmacaoPage = () => {
         rel="noopener noreferrer"
         className="mb-3 flex w-full max-w-sm items-center justify-center gap-2 rounded-xl bg-secondary py-3.5 text-sm font-bold text-foreground transition-all active:scale-95"
       >
-        <MessageCircle className="w-4 h-4" /> Falar com atendente no WhatsApp
+        <MessageCircle className="w-4 h-4" /> Finalize sua compra
       </a>
 
       <Link
