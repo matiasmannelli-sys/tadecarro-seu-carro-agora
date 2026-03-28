@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { formatCurrency, getInstallmentPrice } from "@/data/products";
+import { formatCurrency, formatWeekly, getWeeklyPrice } from "@/data/products";
 import CreditBar from "@/components/loja/CreditBar";
 
 const CarrinhoPage = () => {
   const { items, removeItem, updateQuantity, totalPrice, creditRemaining, totalCredit, creditExceeded } = useCart();
-  const totalInstallment = getInstallmentPrice(totalPrice, 24);
+  const totalWeekly = getWeeklyPrice(totalPrice);
   const creditApplied = Math.min(totalPrice, totalCredit);
 
   if (items.length === 0) {
@@ -49,7 +49,7 @@ const CarrinhoPage = () => {
                 {formatCurrency(product.price * quantity)}
               </div>
               <div className="text-[10px] text-muted-foreground">
-                24x de {formatCurrency(getInstallmentPrice(product.price * quantity, 24))}
+                {formatWeekly(product.price * quantity)}
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <button
@@ -100,7 +100,7 @@ const CarrinhoPage = () => {
           <span className="text-primary">{formatCurrency(totalPrice)}</span>
         </div>
         <div className="mb-3 text-right text-[10px] text-muted-foreground">
-          ou 24x de {formatCurrency(totalInstallment)}
+          ou {formatCurrency(totalWeekly)}/semana
         </div>
         <div className="border-t border-border/60 pt-2 text-[10px]">
           {creditExceeded > 0 ? (

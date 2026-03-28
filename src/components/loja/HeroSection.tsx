@@ -23,7 +23,7 @@ const HeroSection = () => {
         </h1>
 
         <p className="text-sm text-[#F6F5F3]/60 mb-6 max-w-sm mx-auto leading-relaxed">
-          Escolha seus eletrodomésticos, parcele em até 24x e o valor entra direto no seu boleto semanal. Simples assim.
+          Escolha seus eletrodomésticos, pague por semana e o valor entra direto no seu boleto semanal. Simples assim.
         </p>
 
         {/* Credit display */}
@@ -43,7 +43,7 @@ const HeroSection = () => {
         {/* Trust badges */}
         <div className="flex gap-4 mt-8 justify-center flex-wrap">
           {[
-            { icon: CreditCard, text: "Até 24x" },
+            { icon: CreditCard, text: "Por semana" },
             { icon: Zap, text: "Sem burocracia" },
             { icon: Sparkles, text: "Aprovado na hora" },
           ].map((badge) => (

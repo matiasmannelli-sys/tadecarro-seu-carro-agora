@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ShoppingCart, Check } from "lucide-react";
-import { Product, formatCurrency, getInstallmentPrice } from "@/data/products";
+import { Product, formatCurrency, formatWeekly } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { useState } from "react";
 
@@ -10,7 +10,6 @@ const ProductCard = ({ product }: { product: Product }) => {
   const cartItem = items.find((i) => i.product.id === product.id);
   const quantity = cartItem?.quantity ?? 0;
   const inCart = quantity > 0;
-  const installment = getInstallmentPrice(product.price, product.installments);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -55,7 +54,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           <div>
             <span className="text-[10px] text-muted-foreground">{formatCurrency(product.price)} à vista</span>
             <div className="text-sm font-extrabold text-primary">
-              {product.installments}x {formatCurrency(installment)}
+              {formatWeekly(product.price)}
             </div>
           </div>
 

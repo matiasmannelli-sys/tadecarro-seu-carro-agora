@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Check, Truck, Shield } from "lucide-react";
-import { products, formatCurrency, getInstallmentPrice } from "@/data/products";
+import { products, formatCurrency, formatWeekly } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import CreditBar from "@/components/loja/CreditBar";
 import { useState } from "react";
@@ -23,7 +23,7 @@ const ProdutoPage = () => {
     );
   }
 
-  const installment = getInstallmentPrice(product.price, product.installments);
+  
   const cartItem = items.find((i) => i.product.id === product.id);
   const quantity = cartItem?.quantity ?? 0;
   const inCart = quantity > 0;
@@ -67,7 +67,7 @@ const ProdutoPage = () => {
             {formatCurrency(product.price)}
           </div>
             <div className="mb-0.5 text-2xl font-extrabold text-primary">
-            {product.installments}x de {formatCurrency(installment)}
+            {formatWeekly(product.price)}
           </div>
             <div className="text-xs text-muted-foreground">
             ou {formatCurrency(product.price)} à vista

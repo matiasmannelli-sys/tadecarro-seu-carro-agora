@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useCustomer } from "@/contexts/CustomerContext";
-import { formatCurrency, getInstallmentPrice } from "@/data/products";
+import { formatCurrency, getWeeklyPrice } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -94,7 +94,7 @@ const CheckoutPage = () => {
     );
   }
 
-  const totalInstallment = getInstallmentPrice(totalPrice, 24);
+  const totalWeekly = getWeeklyPrice(totalPrice);
   const creditApplied = Math.min(totalPrice, totalCredit);
   const requiresPixAcceptance = creditExceeded > 0;
 
@@ -295,7 +295,7 @@ const CheckoutPage = () => {
                 <span className="text-primary">{formatCurrency(totalPrice)}</span>
               </div>
               <p className="mt-0.5 text-right text-[10px] text-muted-foreground">
-                ou 24x de {formatCurrency(totalInstallment)} no boleto semanal
+                ou {formatCurrency(totalWeekly)}/semana no boleto semanal
               </p>
             </div>
           </div>
@@ -304,14 +304,14 @@ const CheckoutPage = () => {
               <label className="flex items-start gap-3 text-xs text-foreground">
                 <input type="checkbox" {...register("acceptPixExcedente")} className="mt-0.5" />
                 <span>
-                  Aceito pagar {formatCurrency(creditExceeded)} de excedente via Pix; o restante continua no boleto semanal.
+                  Aceito pagar {formatCurrency(creditExceeded)} de excedente via Pix; o restante continua no boleto semanal ({formatCurrency(getWeeklyPrice(totalPrice - creditExceeded))}/semana).
                 </span>
               </label>
               {errors.acceptPixExcedente && <p className={errorClass}>{errors.acceptPixExcedente.message}</p>}
             </div>
           ) : (
             <p className="mt-2 text-[10px] leading-snug text-muted-foreground">
-              O valor será incorporado à sua cobrança recorrente (boleto semanal) junto da parcela do carro.
+              O valor será incorporado à sua cobrança recorrente (boleto semanal) junto do valor do carro.
             </p>
           )}
         </section>
