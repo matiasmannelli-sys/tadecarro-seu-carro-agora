@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
@@ -34,8 +34,13 @@ const CheckoutPage = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/loja/login", { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
+
   if (!isLoggedIn) {
-    navigate("/loja/login", { replace: true });
     return null;
   }
 
