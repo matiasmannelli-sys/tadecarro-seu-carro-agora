@@ -268,19 +268,34 @@ const CheckoutPage = () => {
         {/* Order summary */}
         <section>
           <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-primary">Resumo do pedido</h2>
+
+          {/* À vista toggle */}
+          <div className="mb-3 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/30 p-3">
+            <div>
+              <p className="text-xs font-semibold text-foreground">Pagar à vista com 20% de desconto</p>
+              <p className="text-[10px] text-muted-foreground">
+                De {formatCurrency(totalPrice)} por {formatCurrency(totalPriceAVista)}
+              </p>
+            </div>
+            <Switch checked={payAVista} onCheckedChange={setPayAVista} />
+          </div>
+
           <div className="space-y-2 rounded-xl border border-border/60 bg-card/70 p-3">
-            {items.map(({ product, quantity }) => (
-              <div key={product.id} className="flex justify-between text-xs">
-                <span className="text-muted-foreground">
-                  {quantity}x {product.name}
-                </span>
-                <span className="font-medium text-foreground">
-                  {formatCurrency(product.price * quantity)}
-                </span>
-              </div>
-            ))}
+            {items.map(({ product, quantity }) => {
+              const unitPrice = payAVista ? getCashPrice(product.price) : product.price;
+              return (
+                <div key={product.id} className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">
+                    {quantity}x {product.name}
+                  </span>
+                  <span className="font-medium text-foreground">
+                    {formatCurrency(unitPrice * quantity)}
+                  </span>
+                </div>
+              );
+            })}
             <div className="mt-2 border-t border-border/60 pt-2">
-              {creditExceeded > 0 && (
+              {!payAVista && creditExceeded > 0 && (
                 <>
                   <div className="mb-2 flex justify-between text-xs text-muted-foreground">
                     <span>No crédito</span>
@@ -294,19 +309,29 @@ const CheckoutPage = () => {
               )}
               <div className="flex justify-between text-sm font-extrabold">
                 <span className="text-foreground">Total</span>
-                <span className="text-primary">{formatCurrency(totalPrice)}</span>
+                <span className={payAVista ? "text-emerald-600" : "text-primary"}>{formatCurrency(finalTotal)}</span>
               </div>
-              <p className="mt-0.5 text-right text-[10px] text-muted-foreground">
-                104 semanas de {formatCurrency(totalWeekly)}/sem
-              </p>
+              {payAVista ? (
+                <p className="mt-0.5 text-right text-[10px] text-emerald-600 font-medium">
+                  Você economiza {formatCurrency(totalPrice - totalPriceAVista)}!
+                </p>
+              ) : (
+                <p className="mt-0.5 text-right text-[10px] text-muted-foreground">
+                  104 semanas de {formatCurrency(totalWeekly)}/sem
+                </p>
+              )}
             </div>
           </div>
-          {creditExceeded > 0 ? (
+          {payAVista ? (
+            <p className="mt-2 text-[10px] leading-snug text-emerald-600">
+              Pagamento único à vista via Pix. Desconto de 20% aplicado automaticamente.
+            </p>
+          ) : creditExceeded > 0 ? (
             <div className="mt-3 rounded-xl border border-primary/30 bg-primary/10 p-3">
               <label className="flex items-start gap-3 text-xs text-foreground">
                 <input type="checkbox" {...register("acceptPixExcedente")} className="mt-0.5" />
                 <span>
-                  Aceito pagar {formatCurrency(creditExceeded)} de excedente via Pix; o restante continua no boleto semanal ({formatCurrency(getWeeklyPrice(totalPrice - creditExceeded))}/semana).
+                  Aceito pagar {formatCurrency(creditExceeded)} de excedente via Pix; o restante continua no boleto semanal ({formatCurrency(getWeeklyPrice(finalTotal - creditExceeded))}/semana).
                 </span>
               </label>
               {errors.acceptPixExcedente && <p className={errorClass}>{errors.acceptPixExcedente.message}</p>}

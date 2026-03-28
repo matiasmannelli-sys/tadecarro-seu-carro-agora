@@ -8,6 +8,7 @@ const ConfirmacaoPage = () => {
   const location = useLocation();
   const creditExceeded = Number(location.state?.creditExceeded || 0);
   const hasPix = creditExceeded > 0;
+  const payAVista = location.state?.payAVista || false;
 
   const customerName = location.state?.customerName || "Cliente";
   const cartItems: { name: string; quantity: number }[] = location.state?.cartItems || [];
@@ -15,7 +16,11 @@ const ConfirmacaoPage = () => {
   const paymentMethod = location.state?.paymentMethod || "boleto_semanal";
 
   const itemsList = cartItems.map((i) => `${i.quantity}x ${i.name}`).join(", ");
-  const methodLabel = paymentMethod === "credito_pix" ? "crédito + pix" : "boleto semanal";
+  const methodLabel = payAVista
+    ? "à vista com 20% de desconto (Pix)"
+    : paymentMethod === "credito_pix"
+    ? "crédito + pix"
+    : "boleto semanal";
 
   const message = `Olá! Sou ${customerName} e acabei de fazer um pedido na loja TaDeCarro. Meu pedido: ${itemsList}. Total: ${formatCurrency(totalPrice)}. Método: ${methodLabel}. Aguardo confirmação!`;
 
@@ -38,7 +43,11 @@ const ConfirmacaoPage = () => {
           <li>✓ Seu pedido foi salvo automaticamente</li>
           <li>✓ Nossa equipe já foi notificada</li>
           <li>✓ Entraremos em contato para confirmar</li>
-          <li>✓ {hasPix ? `O crédito foi aplicado e o excedente de ${formatCurrency(creditExceeded)} será pago via Pix` : "O valor será incluído no seu boleto semanal"}</li>
+          <li>✓ {payAVista
+            ? `Pagamento à vista via Pix: ${formatCurrency(totalPrice)} (com 20% de desconto)`
+            : hasPix
+            ? `O crédito foi aplicado e o excedente de ${formatCurrency(creditExceeded)} será pago via Pix`
+            : "O valor será incluído no seu boleto semanal"}</li>
         </ul>
       </div>
 
