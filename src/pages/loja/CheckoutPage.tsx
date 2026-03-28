@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useCustomer } from "@/contexts/CustomerContext";
-import { formatCurrency, getInstallmentPrice } from "@/data/products";
+import { formatCurrency, getWeeklyPrice } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
