@@ -49,7 +49,7 @@ const CarrinhoPage = () => {
                 {formatCurrency(product.price * quantity)}
               </div>
               <div className="text-[10px] text-muted-foreground">
-                24x de {formatCurrency(getInstallmentPrice(product.price * quantity, 24))}
+                {formatWeekly(product.price * quantity)}
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <button
