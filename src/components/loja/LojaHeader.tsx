@@ -14,7 +14,7 @@ const LojaHeader = () => {
         <Link to="/loja" className="flex items-center gap-2">
           <img src={logoIcon} alt="TaDeCarro" className="h-8 w-8 object-contain" />
           <span className="text-lg font-extrabold text-[#F6F5F3]">
-            Tá de <span className="text-[#E5541C]">Carro</span>
+            TaDe<span className="text-[#E5541C]">Carro</span>
           </span>
         </Link>
 
