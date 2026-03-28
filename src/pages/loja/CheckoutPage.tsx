@@ -295,7 +295,7 @@ const CheckoutPage = () => {
                 <span className="text-primary">{formatCurrency(totalPrice)}</span>
               </div>
               <p className="mt-0.5 text-right text-[10px] text-muted-foreground">
-                ou 24x de {formatCurrency(totalInstallment)} no boleto semanal
+                ou {formatCurrency(totalWeekly)}/semana no boleto semanal
               </p>
             </div>
           </div>
