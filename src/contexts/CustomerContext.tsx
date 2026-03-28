@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Session } from "@supabase/supabase-js";
 
 export interface CustomerData {
   id?: string;
@@ -18,72 +19,113 @@ export interface CustomerData {
 
 interface CustomerContextType {
   customer: CustomerData | null;
+  session: Session | null;
   isLoggedIn: boolean;
-  loginByPlaca: (placa: string) => Promise<CustomerData | null>;
+  loading: boolean;
+  signUp: (email: string, password: string) => Promise<{ error: string | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   createOrUpdateCustomer: (data: CustomerData) => Promise<CustomerData | null>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const CustomerContext = createContext<CustomerContextType | null>(null);
 
-const STORAGE_KEY = "tdcarro-customer";
-
 export function CustomerProvider({ children }: { children: React.ReactNode }) {
-  const [customer, setCustomer] = useState<CustomerData | null>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [session, setSession] = useState<Session | null>(null);
+  const [customer, setCustomer] = useState<CustomerData | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  // Listen for auth state changes
   useEffect(() => {
-    if (customer) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(customer));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [customer]);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (!session) {
+        setCustomer(null);
+        setLoading(false);
+      }
+    });
 
-  const loginByPlaca = useCallback(async (placa: string): Promise<CustomerData | null> => {
-    const normalized = placa.toUpperCase().replace(/[^A-Z0-9]/g, "");
-    const { data, error } = await supabase
-      .from("customers")
-      .select("*")
-      .eq("placa", normalized)
-      .maybeSingle();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (!session) setLoading(false);
+    });
 
-    if (error || !data) return null;
+    return () => subscription.unsubscribe();
+  }, []);
 
-    const customerData: CustomerData = {
-      id: data.id,
-      nome: data.nome,
-      cpf: data.cpf,
-      email: data.email || "",
-      whatsapp: data.whatsapp || "",
-      endereco: data.endereco || "",
-      numero: data.numero || "",
-      complemento: data.complemento || "",
-      bairro: data.bairro || "",
-      cidade: data.cidade || "",
-      cep: data.cep || "",
-      placa: data.placa,
+  // When session changes, fetch customer data
+  useEffect(() => {
+    if (!session?.user) return;
+
+    const fetchCustomer = async () => {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      if (!error && data) {
+        setCustomer({
+          id: data.id,
+          nome: data.nome,
+          cpf: data.cpf,
+          email: data.email || "",
+          whatsapp: data.whatsapp || "",
+          endereco: data.endereco || "",
+          numero: data.numero || "",
+          complemento: data.complemento || "",
+          bairro: data.bairro || "",
+          cidade: data.cidade || "",
+          cep: data.cep || "",
+          placa: data.placa,
+        });
+      }
+      setLoading(false);
     };
-    setCustomer(customerData);
-    return customerData;
+
+    fetchCustomer();
+  }, [session?.user?.id]);
+
+  const signUp = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    if (error) return { error: error.message };
+    return { error: null };
+  }, []);
+
+  const signIn = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { error: error.message };
+    return { error: null };
   }, []);
 
   const createOrUpdateCustomer = useCallback(async (data: CustomerData): Promise<CustomerData | null> => {
-    const normalized = data.placa.toUpperCase().replace(/[^A-Z0-9]/g, "");
-    const payload = { ...data, placa: normalized };
-    delete (payload as any).id;
+    if (!session?.user) return null;
 
-    // Check if customer exists
+    const normalized = data.placa.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const payload = {
+      nome: data.nome,
+      cpf: data.cpf,
+      email: data.email,
+      whatsapp: data.whatsapp,
+      endereco: data.endereco,
+      numero: data.numero,
+      complemento: data.complemento,
+      bairro: data.bairro,
+      cidade: data.cidade,
+      cep: data.cep,
+      placa: normalized,
+      user_id: session.user.id,
+    };
+
+    // Check if customer exists for this user
     const { data: existing } = await supabase
       .from("customers")
       .select("id")
-      .eq("placa", normalized)
+      .eq("user_id", session.user.id)
       .maybeSingle();
 
     let result;
@@ -122,14 +164,15 @@ export function CustomerProvider({ children }: { children: React.ReactNode }) {
     };
     setCustomer(customerData);
     return customerData;
-  }, []);
+  }, [session?.user]);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
     setCustomer(null);
   }, []);
 
   return (
-    <CustomerContext.Provider value={{ customer, isLoggedIn: !!customer, loginByPlaca, createOrUpdateCustomer, logout }}>
+    <CustomerContext.Provider value={{ customer, session, isLoggedIn: !!session, loading, signUp, signIn, createOrUpdateCustomer, logout }}>
       {children}
     </CustomerContext.Provider>
   );
