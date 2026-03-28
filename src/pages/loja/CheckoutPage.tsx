@@ -304,7 +304,7 @@ const CheckoutPage = () => {
               <label className="flex items-start gap-3 text-xs text-foreground">
                 <input type="checkbox" {...register("acceptPixExcedente")} className="mt-0.5" />
                 <span>
-                  Aceito pagar {formatCurrency(creditExceeded)} de excedente via Pix; o restante continua no boleto semanal.
+                  Aceito pagar {formatCurrency(creditExceeded)} de excedente via Pix; o restante continua no boleto semanal ({formatCurrency(getWeeklyPrice(totalPrice - creditExceeded))}/semana).
                 </span>
               </label>
               {errors.acceptPixExcedente && <p className={errorClass}>{errors.acceptPixExcedente.message}</p>}
