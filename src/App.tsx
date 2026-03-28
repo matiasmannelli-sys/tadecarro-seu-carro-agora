@@ -47,6 +47,8 @@ const App = () => (
             <Route path="confirmacao" element={<ConfirmacaoPage />} />
             <Route path="login" element={<LoginPlacaPage />} />
             <Route path="cadastro" element={<CadastroPage />} />
+            <Route path="esqueci-senha" element={<EsqueciSenhaPage />} />
+            <Route path="redefinir-senha" element={<RedefinirSenhaPage />} />
           </Route>
 
           {/* App interno */}

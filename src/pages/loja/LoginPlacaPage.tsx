@@ -80,6 +80,13 @@ const LoginPlacaPage = () => {
           </button>
         </form>
 
+        <Link
+          to="/loja/esqueci-senha"
+          className="block text-xs text-[#F6F5F3]/40 mt-4 hover:text-[#F6F5F3]/60 transition-colors"
+        >
+          Esqueci minha senha
+        </Link>
+
         <div className="mt-8 pt-6 border-t border-white/5">
           <p className="text-xs text-[#F6F5F3]/40 mb-3">Primeira vez aqui?</p>
           <Link
