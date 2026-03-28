@@ -23,7 +23,7 @@ const ProdutoPage = () => {
     );
   }
 
-  const installment = getInstallmentPrice(product.price, product.installments);
+  
   const cartItem = items.find((i) => i.product.id === product.id);
   const quantity = cartItem?.quantity ?? 0;
   const inCart = quantity > 0;
