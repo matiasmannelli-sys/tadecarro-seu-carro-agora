@@ -100,6 +100,7 @@ const CheckoutPage = () => {
 
       const { error: orderError } = await supabase.from("orders").insert({
         customer_id: customerResult?.id || null,
+        user_id: session?.user?.id || null,
         customer_nome: data.nome,
         customer_cpf: data.cpf,
         customer_email: data.email,
