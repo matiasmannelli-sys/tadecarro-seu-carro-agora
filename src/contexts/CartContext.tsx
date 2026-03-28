@@ -16,6 +16,8 @@ interface CartContextType {
   totalPrice: number;
   creditUsed: number;
   creditRemaining: number;
+  creditExceeded: number;
+  withinCredit: boolean;
   itemCount: number;
 }
 
@@ -69,6 +71,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const totalPrice = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
   const creditUsed = totalPrice;
   const creditRemaining = TOTAL_CREDIT - creditUsed;
+  const creditExceeded = Math.max(0, creditUsed - TOTAL_CREDIT);
+  const withinCredit = creditExceeded === 0;
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
@@ -83,6 +87,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         totalPrice,
         creditUsed,
         creditRemaining,
+        creditExceeded,
+        withinCredit,
         itemCount,
       }}
     >

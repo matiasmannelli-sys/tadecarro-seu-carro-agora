@@ -72,6 +72,7 @@ export type Database = {
           cidade: string | null
           complemento: string | null
           created_at: string | null
+          credit_applied: number
           customer_cpf: string | null
           customer_email: string | null
           customer_id: string | null
@@ -79,10 +80,13 @@ export type Database = {
           customer_placa: string | null
           customer_whatsapp: string | null
           endereco_entrega: string | null
+          guest_checkout: boolean
           id: string
           items: Json
           numero: string | null
           observacoes: string | null
+          payment_method: string
+          pix_excedente: number
           status: string
           total: number
           user_id: string | null
@@ -93,6 +97,7 @@ export type Database = {
           cidade?: string | null
           complemento?: string | null
           created_at?: string | null
+          credit_applied?: number
           customer_cpf?: string | null
           customer_email?: string | null
           customer_id?: string | null
@@ -100,10 +105,13 @@ export type Database = {
           customer_placa?: string | null
           customer_whatsapp?: string | null
           endereco_entrega?: string | null
+          guest_checkout?: boolean
           id?: string
           items?: Json
           numero?: string | null
           observacoes?: string | null
+          payment_method?: string
+          pix_excedente?: number
           status?: string
           total?: number
           user_id?: string | null
@@ -114,6 +122,7 @@ export type Database = {
           cidade?: string | null
           complemento?: string | null
           created_at?: string | null
+          credit_applied?: number
           customer_cpf?: string | null
           customer_email?: string | null
           customer_id?: string | null
@@ -121,10 +130,13 @@ export type Database = {
           customer_placa?: string | null
           customer_whatsapp?: string | null
           endereco_entrega?: string | null
+          guest_checkout?: boolean
           id?: string
           items?: Json
           numero?: string | null
           observacoes?: string | null
+          payment_method?: string
+          pix_excedente?: number
           status?: string
           total?: number
           user_id?: string | null
@@ -144,7 +156,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_checkout_order: {
+        Args: {
+          _accept_pix_excedente?: boolean
+          _bairro: string
+          _cep: string
+          _cidade: string
+          _complemento: string
+          _cpf: string
+          _credit_limit: number
+          _email: string
+          _endereco: string
+          _items: Json
+          _nome: string
+          _numero: string
+          _observacoes: string
+          _placa: string
+          _total: number
+          _whatsapp: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
