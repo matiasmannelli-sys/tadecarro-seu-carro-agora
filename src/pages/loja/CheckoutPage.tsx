@@ -211,7 +211,7 @@ const CheckoutPage = () => {
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2">
                 <label className={labelClass}>CEP</label>
-                <input {...register("cep")} className={inputClass} placeholder="00000-000" />
+                <input {...register("cep")} onChange={handleMaskedChange("cep", maskCEP)} className={inputClass} placeholder="00000-000" inputMode="numeric" />
                 {errors.cep && <p className={errorClass}>{errors.cep.message}</p>}
               </div>
             </div>
