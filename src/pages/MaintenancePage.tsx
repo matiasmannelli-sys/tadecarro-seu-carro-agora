@@ -62,7 +62,7 @@ const MaintenancePage = () => {
 
       {/* Schedule maintenance button */}
       <button
-        onClick={() => openWA("Olá, sou João Silva e quero agendar uma manutenção do meu Fiat Argo")}
+        onClick={() => openWA()}
         className="w-full py-3 text-sm font-semibold rounded-xl brand-gradient text-primary-foreground active:scale-[0.96] transition-transform flex items-center justify-center gap-2 mb-5"
       >
         <Wrench className="w-4 h-4" />

@@ -112,9 +112,7 @@ const StorePage = () => {
                 </div>
               </div>
               <button
-                onClick={() =>
-                  openWA(`Olá, quero solicitar troca para categoria ${cat.name}. Cliente: ${CLIENT_NAME}, Contrato ${CONTRACT}`)
-                }
+                onClick={() => openWA()}
                 className="w-full py-2.5 text-xs font-medium rounded-xl bg-secondary text-foreground border border-border active:scale-95 transition-transform flex items-center justify-center gap-1"
               >
                 <MessageCircle className="w-3 h-3" />
