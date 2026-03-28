@@ -31,11 +31,11 @@ const maskPlaca = (v: string) =>
 
 const checkoutSchema = z.object({
   nome: z.string().min(3, "Informe seu nome completo"),
-  cpf: z.string().min(11, "CPF inválido"),
-  whatsapp: z.string().min(10, "WhatsApp inválido"),
+  cpf: z.string().refine(v => v.replace(/\D/g, "").length === 11, "CPF inválido"),
+  whatsapp: z.string().refine(v => v.replace(/\D/g, "").length >= 10, "WhatsApp inválido"),
   email: z.string().email("E-mail inválido"),
   placa: z.string().min(7, "Informe a placa do veículo"),
-  cep: z.string().min(8, "CEP inválido"),
+  cep: z.string().refine(v => v.replace(/\D/g, "").length === 8, "CEP inválido"),
   endereco: z.string().min(3, "Informe o endereço"),
   numero: z.string().min(1, "Informe o número"),
   complemento: z.string().optional(),
@@ -45,7 +45,7 @@ const checkoutSchema = z.object({
   acceptPixExcedente: z.boolean().optional(),
 });
 
-type CheckoutForm = z.infer<typeof checkoutSchema>;
+const stripMask = (v: string) => v.replace(/\D/g, "");
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
