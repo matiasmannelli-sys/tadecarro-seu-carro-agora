@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ShoppingCart, User, LogOut } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useCustomer } from "@/contexts/CustomerContext";
+import logoIcon from "@/assets/logo-icon-orange.png";
 
 const LojaHeader = () => {
   const { itemCount } = useCart();
@@ -11,6 +12,7 @@ const LojaHeader = () => {
     <header className="sticky top-0 z-50 bg-[#090A2E]/95 backdrop-blur-md border-b border-white/5">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/loja" className="flex items-center gap-2">
+          <img src={logoIcon} alt="TaDeCarro" className="h-8 w-8 object-contain" />
           <span className="text-lg font-extrabold text-[#F6F5F3]">
             Tá de <span className="text-[#E5541C]">Carro</span>
           </span>
