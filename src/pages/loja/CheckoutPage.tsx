@@ -94,7 +94,7 @@ const CheckoutPage = () => {
     );
   }
 
-  const totalInstallment = getInstallmentPrice(totalPrice, 24);
+  const totalWeekly = getWeeklyPrice(totalPrice);
   const creditApplied = Math.min(totalPrice, totalCredit);
   const requiresPixAcceptance = creditExceeded > 0;
 
