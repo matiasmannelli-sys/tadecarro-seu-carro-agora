@@ -116,8 +116,9 @@ const CheckoutPage = () => {
 
       const { data: orderId, error: orderError } = await (supabase as any).rpc("create_checkout_order", {
         _nome: data.nome,
-        _cpf: data.cpf,
+        _cpf: stripMask(data.cpf),
         _email: data.email,
+        _whatsapp: stripMask(data.whatsapp),
         _whatsapp: data.whatsapp,
         _placa: data.placa,
         _cep: data.cep,
