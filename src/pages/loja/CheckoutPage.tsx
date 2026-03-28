@@ -34,8 +34,13 @@ const CheckoutPage = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/loja/login", { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
+
   if (!isLoggedIn) {
-    navigate("/loja/login", { replace: true });
     return null;
   }
 
