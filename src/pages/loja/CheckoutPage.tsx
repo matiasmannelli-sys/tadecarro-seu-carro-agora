@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
@@ -23,26 +23,16 @@ const checkoutSchema = z.object({
   bairro: z.string().min(2, "Informe o bairro"),
   cidade: z.string().min(2, "Informe a cidade"),
   observacoes: z.string().optional(),
+  acceptPixExcedente: z.boolean().optional(),
 });
 
 type CheckoutForm = z.infer<typeof checkoutSchema>;
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const { items, totalPrice, clearCart } = useCart();
-  const { customer, session, isLoggedIn, createOrUpdateCustomer } = useCustomer();
+  const { items, totalPrice, clearCart, totalCredit, creditExceeded } = useCart();
+  const { customer, isLoggedIn } = useCustomer();
   const [submitting, setSubmitting] = useState(false);
-
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/loja/login", { replace: true });
-    }
-  }, [isLoggedIn, navigate]);
-
-  if (!isLoggedIn) {
-    return null;
-  }
 
   const {
     register,
@@ -62,39 +52,35 @@ const CheckoutPage = () => {
       complemento: customer?.complemento || "",
       bairro: customer?.bairro || "",
       cidade: customer?.cidade || "",
+      acceptPixExcedente: false,
     },
   });
+
+  const {
+    watch,
+  } = useForm<CheckoutForm>;
 
   if (items.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
-        <p className="text-sm text-[#F6F5F3]/50 mb-4">Seu carrinho está vazio.</p>
-        <Link to="/loja" className="text-[#E5541C] text-sm font-semibold">Ver produtos</Link>
+        <p className="mb-4 text-sm text-muted-foreground">Seu carrinho está vazio.</p>
+        <Link to="/loja" className="text-sm font-semibold text-primary">Ver produtos</Link>
       </div>
     );
   }
 
   const totalInstallment = getInstallmentPrice(totalPrice, 24);
+  const creditApplied = Math.min(totalPrice, totalCredit);
+  const requiresPixAcceptance = creditExceeded > 0;
 
   const onSubmit = async (data: CheckoutForm) => {
+    if (requiresPixAcceptance && !data.acceptPixExcedente) {
+      toast.error("Confirme o pagamento do excedente via Pix para continuar.");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      // 1. Create/update customer (auto-creates account)
-      const customerResult = await createOrUpdateCustomer({
-        nome: data.nome,
-        cpf: data.cpf,
-        email: data.email,
-        whatsapp: data.whatsapp,
-        endereco: data.endereco,
-        numero: data.numero,
-        complemento: data.complemento || "",
-        bairro: data.bairro,
-        cidade: data.cidade,
-        cep: data.cep,
-        placa: data.placa,
-      });
-
-      // 2. Save order to database
       const orderItems = items.map(({ product, quantity }) => ({
         sku: product.sku,
         name: product.name,
@@ -103,24 +89,23 @@ const CheckoutPage = () => {
         subtotal: product.price * quantity,
       }));
 
-      const { error: orderError } = await supabase.from("orders").insert({
-        customer_id: customerResult?.id || null,
-        user_id: session?.user?.id || null,
-        customer_nome: data.nome,
-        customer_cpf: data.cpf,
-        customer_email: data.email,
-        customer_whatsapp: data.whatsapp,
-        customer_placa: data.placa.toUpperCase().replace(/[^A-Z0-9]/g, ""),
-        endereco_entrega: data.endereco,
-        numero: data.numero,
-        complemento: data.complemento || null,
-        bairro: data.bairro,
-        cidade: data.cidade,
-        cep: data.cep,
-        observacoes: data.observacoes || null,
-        total: totalPrice,
-        status: "pendente",
-        items: orderItems,
+      const { data: orderId, error: orderError } = await (supabase as any).rpc("create_checkout_order", {
+        _nome: data.nome,
+        _cpf: data.cpf,
+        _email: data.email,
+        _whatsapp: data.whatsapp,
+        _placa: data.placa,
+        _cep: data.cep,
+        _endereco: data.endereco,
+        _numero: data.numero,
+        _complemento: data.complemento || null,
+        _bairro: data.bairro,
+        _cidade: data.cidade,
+        _observacoes: data.observacoes || null,
+        _items: orderItems,
+        _total: totalPrice,
+        _credit_limit: totalCredit,
+        _accept_pix_excedente: !!data.acceptPixExcedente,
       });
 
       if (orderError) {
@@ -131,7 +116,13 @@ const CheckoutPage = () => {
       }
 
       clearCart();
-      navigate("/loja/confirmacao");
+      navigate("/loja/confirmacao", {
+        state: {
+          orderId,
+          creditExceeded,
+          paymentMethod: creditExceeded > 0 ? "credito_pix" : "boleto_semanal",
+        },
+      });
     } catch (err) {
       console.error(err);
       toast.error("Erro inesperado. Tente novamente.");
@@ -140,22 +131,25 @@ const CheckoutPage = () => {
   };
 
   const inputClass =
-    "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-[#F6F5F3] placeholder:text-[#F6F5F3]/25 focus:outline-none focus:border-[#E5541C]/50 transition-colors";
-  const labelClass = "block text-xs font-medium text-[#F6F5F3]/60 mb-1";
-  const errorClass = "text-[10px] text-red-400 mt-0.5";
+    "w-full rounded-xl border border-input bg-card/70 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/40";
+  const labelClass = "mb-1 block text-xs font-medium text-muted-foreground";
+  const errorClass = "mt-0.5 text-[10px] text-destructive";
 
   return (
-    <div className="bg-[#090A2E] min-h-screen px-4 py-4">
-      <Link to="/loja/carrinho" className="flex items-center gap-1.5 text-[#F6F5F3]/50 text-sm mb-4">
+    <div className="min-h-screen bg-background px-4 py-4">
+      <Link to="/loja/carrinho" className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
         <ArrowLeft className="w-4 h-4" /> Voltar ao carrinho
       </Link>
 
-      <h1 className="text-lg font-extrabold text-[#F6F5F3] mb-5">Finalizar pedido</h1>
+      <h1 className="mb-2 text-lg font-extrabold text-foreground">Finalizar pedido</h1>
+      <p className="mb-5 text-xs text-muted-foreground">
+        {isLoggedIn ? "Seus dados foram preenchidos automaticamente, se disponíveis." : "Você pode concluir a compra sem criar conta."}
+      </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Personal data */}
         <section>
-          <h2 className="text-xs font-bold text-[#E5541C] uppercase tracking-wider mb-3">Seus dados</h2>
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-primary">Seus dados</h2>
           <div className="space-y-3">
             <div>
               <label className={labelClass}>Nome completo</label>
@@ -189,7 +183,7 @@ const CheckoutPage = () => {
 
         {/* Address */}
         <section>
-          <h2 className="text-xs font-bold text-[#E5541C] uppercase tracking-wider mb-3">Endereço de entrega</h2>
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-primary">Endereço de entrega</h2>
           <div className="space-y-3">
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2">
@@ -240,40 +234,70 @@ const CheckoutPage = () => {
 
         {/* Order summary */}
         <section>
-          <h2 className="text-xs font-bold text-[#E5541C] uppercase tracking-wider mb-3">Resumo do pedido</h2>
-          <div className="bg-[#2D2774]/20 rounded-xl p-3 border border-white/5 space-y-2">
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-primary">Resumo do pedido</h2>
+          <div className="space-y-2 rounded-xl border border-border/60 bg-card/70 p-3">
             {items.map(({ product, quantity }) => (
               <div key={product.id} className="flex justify-between text-xs">
-                <span className="text-[#F6F5F3]/70">
+                <span className="text-muted-foreground">
                   {quantity}x {product.name}
                 </span>
-                <span className="text-[#F6F5F3] font-medium">
+                <span className="font-medium text-foreground">
                   {formatCurrency(product.price * quantity)}
                 </span>
               </div>
             ))}
-            <div className="border-t border-white/5 pt-2 mt-2">
+            <div className="mt-2 border-t border-border/60 pt-2">
+              {creditExceeded > 0 && (
+                <>
+                  <div className="mb-2 flex justify-between text-xs text-muted-foreground">
+                    <span>No crédito</span>
+                    <span>{formatCurrency(creditApplied)}</span>
+                  </div>
+                  <div className="mb-2 flex justify-between text-xs text-primary">
+                    <span>Excedente no Pix</span>
+                    <span>{formatCurrency(creditExceeded)}</span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between text-sm font-extrabold">
-                <span className="text-[#F6F5F3]">Total</span>
-                <span className="text-[#E5541C]">{formatCurrency(totalPrice)}</span>
+                <span className="text-foreground">Total</span>
+                <span className="text-primary">{formatCurrency(totalPrice)}</span>
               </div>
-              <p className="text-[10px] text-[#F6F5F3]/40 text-right mt-0.5">
+              <p className="mt-0.5 text-right text-[10px] text-muted-foreground">
                 ou 24x de {formatCurrency(totalInstallment)} no boleto semanal
               </p>
             </div>
           </div>
-          <p className="text-[10px] text-[#F6F5F3]/30 mt-2 leading-snug">
-            O valor será incorporado à sua cobrança recorrente (boleto semanal) junto da parcela do carro.
-          </p>
+          {creditExceeded > 0 ? (
+            <div className="mt-3 rounded-xl border border-primary/30 bg-primary/10 p-3">
+              <label className="flex items-start gap-3 text-xs text-foreground">
+                <input type="checkbox" {...register("acceptPixExcedente")} className="mt-0.5" />
+                <span>
+                  Aceito pagar {formatCurrency(creditExceeded)} de excedente via Pix; o restante continua no boleto semanal.
+                </span>
+              </label>
+              {errors.acceptPixExcedente && <p className={errorClass}>{errors.acceptPixExcedente.message}</p>}
+            </div>
+          ) : (
+            <p className="mt-2 text-[10px] leading-snug text-muted-foreground">
+              O valor será incorporado à sua cobrança recorrente (boleto semanal) junto da parcela do carro.
+            </p>
+          )}
         </section>
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-3.5 rounded-xl text-sm font-bold bg-[#E5541C] text-white active:scale-95 transition-all shadow-lg shadow-[#E5541C]/25 disabled:opacity-60"
+          className="w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground transition-all shadow-lg shadow-primary/25 active:scale-95 disabled:opacity-60"
         >
-          {submitting ? "Salvando pedido..." : "Confirmar pedido"}
+          {submitting ? "Salvando pedido..." : requiresPixAcceptance ? "Confirmar pedido com Pix excedente" : "Confirmar pedido"}
         </button>
+
+        {!isLoggedIn && (
+          <p className="text-center text-xs text-muted-foreground">
+            Quer acompanhar compras depois? <Link to="/loja/cadastro" className="font-semibold text-primary">Criar conta é opcional</Link>.
+          </p>
+        )}
       </form>
     </div>
   );

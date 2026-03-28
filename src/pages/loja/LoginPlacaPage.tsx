@@ -52,6 +52,9 @@ const LoginPlacaPage = () => {
         <p className="text-sm text-[#F6F5F3]/50 mb-8">
           Use seu e-mail e senha para acessar sua conta.
         </p>
+        <p className="text-xs text-[#F6F5F3]/35 mb-6">
+          Criar conta é opcional: você também pode finalizar a compra sem login.
+        </p>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <input

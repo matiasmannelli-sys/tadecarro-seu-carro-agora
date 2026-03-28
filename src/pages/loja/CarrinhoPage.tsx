@@ -5,18 +5,19 @@ import { formatCurrency, getInstallmentPrice } from "@/data/products";
 import CreditBar from "@/components/loja/CreditBar";
 
 const CarrinhoPage = () => {
-  const { items, removeItem, updateQuantity, totalPrice, creditRemaining } = useCart();
+  const { items, removeItem, updateQuantity, totalPrice, creditRemaining, totalCredit, creditExceeded } = useCart();
   const totalInstallment = getInstallmentPrice(totalPrice, 24);
+  const creditApplied = Math.min(totalPrice, totalCredit);
 
   if (items.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
-        <ShoppingBag className="w-12 h-12 text-[#F6F5F3]/20 mb-4" />
-        <h2 className="text-lg font-bold text-[#F6F5F3] mb-2">Carrinho vazio</h2>
-        <p className="text-xs text-[#F6F5F3]/40 mb-6">Escolha produtos para começar.</p>
+        <ShoppingBag className="mb-4 w-12 h-12 text-muted-foreground/40" />
+        <h2 className="mb-2 text-lg font-bold text-foreground">Carrinho vazio</h2>
+        <p className="mb-6 text-xs text-muted-foreground">Escolha produtos para começar.</p>
         <Link
           to="/loja"
-          className="bg-[#E5541C] text-white px-6 py-3 rounded-xl text-sm font-bold active:scale-95 transition-transform"
+          className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-transform active:scale-95"
         >
           Ver produtos
         </Link>
@@ -25,12 +26,12 @@ const CarrinhoPage = () => {
   }
 
   return (
-    <div className="bg-[#090A2E] min-h-screen px-4 py-4">
-      <Link to="/loja" className="flex items-center gap-1.5 text-[#F6F5F3]/50 text-sm mb-4">
+    <div className="min-h-screen bg-background px-4 py-4">
+      <Link to="/loja" className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
         <ArrowLeft className="w-4 h-4" /> Continuar comprando
       </Link>
 
-      <h1 className="text-lg font-extrabold text-[#F6F5F3] mb-4">Seu carrinho</h1>
+      <h1 className="mb-4 text-lg font-extrabold text-foreground">Seu carrinho</h1>
 
       <div className="mb-4">
         <CreditBar compact />
@@ -38,35 +39,35 @@ const CarrinhoPage = () => {
 
       <div className="space-y-3 mb-6">
         {items.map(({ product, quantity }) => (
-          <div key={product.id} className="bg-[#2D2774]/20 rounded-xl p-3 border border-white/5 flex gap-3">
-            <div className="w-16 h-16 bg-white rounded-lg p-1.5 shrink-0 flex items-center justify-center">
+          <div key={product.id} className="flex gap-3 rounded-xl border border-border/60 bg-card/70 p-3">
+            <div className={`product-surface product-surface--${product.category} h-16 w-16 shrink-0 rounded-lg p-1.5`}>
               <img src={product.image} alt={product.name} className="w-full h-full object-contain" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-xs font-semibold text-[#F6F5F3] line-clamp-1">{product.name}</h3>
-              <div className="text-sm font-extrabold text-[#E5541C] mt-0.5">
+              <h3 className="line-clamp-1 text-xs font-semibold text-foreground">{product.name}</h3>
+              <div className="mt-0.5 text-sm font-extrabold text-primary">
                 {formatCurrency(product.price * quantity)}
               </div>
-              <div className="text-[10px] text-[#F6F5F3]/40">
+              <div className="text-[10px] text-muted-foreground">
                 24x de {formatCurrency(getInstallmentPrice(product.price * quantity, 24))}
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <button
                   onClick={() => updateQuantity(product.id, quantity - 1)}
-                  className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[#F6F5F3] active:scale-90"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary text-foreground active:scale-90"
                 >
                   <Minus className="w-3 h-3" />
                 </button>
-                <span className="text-xs font-bold text-[#F6F5F3] w-5 text-center">{quantity}</span>
+                <span className="w-5 text-center text-xs font-bold text-foreground">{quantity}</span>
                 <button
                   onClick={() => updateQuantity(product.id, quantity + 1)}
-                  className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[#F6F5F3] active:scale-90"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground active:scale-90"
                 >
                   <Plus className="w-3 h-3" />
                 </button>
                 <button
                   onClick={() => removeItem(product.id)}
-                  className="ml-auto p-1.5 text-red-400/60 hover:text-red-400"
+                  className="ml-auto p-1.5 text-destructive/70 hover:text-destructive"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -77,29 +78,54 @@ const CarrinhoPage = () => {
       </div>
 
       {/* Summary */}
-      <div className="bg-[#2D2774]/30 rounded-2xl p-4 border border-white/5 mb-4">
-        <div className="flex justify-between text-xs text-[#F6F5F3]/50 mb-2">
+      <div className="mb-4 rounded-2xl border border-border/60 bg-card/80 p-4">
+        <div className="mb-2 flex justify-between text-xs text-muted-foreground">
           <span>Subtotal</span>
           <span>{formatCurrency(totalPrice)}</span>
         </div>
-        <div className="flex justify-between text-sm font-extrabold text-[#F6F5F3] mb-1">
+        {creditExceeded > 0 && (
+          <>
+            <div className="mb-2 flex justify-between text-xs text-muted-foreground">
+              <span>No crédito</span>
+              <span>{formatCurrency(creditApplied)}</span>
+            </div>
+            <div className="mb-2 flex justify-between text-xs text-primary">
+              <span>Excedente no Pix</span>
+              <span>{formatCurrency(creditExceeded)}</span>
+            </div>
+          </>
+        )}
+        <div className="mb-1 flex justify-between text-sm font-extrabold text-foreground">
           <span>Total</span>
-          <span className="text-[#E5541C]">{formatCurrency(totalPrice)}</span>
+          <span className="text-primary">{formatCurrency(totalPrice)}</span>
         </div>
-        <div className="text-right text-[10px] text-[#F6F5F3]/40 mb-3">
+        <div className="mb-3 text-right text-[10px] text-muted-foreground">
           ou 24x de {formatCurrency(totalInstallment)}
         </div>
-        <div className="flex justify-between text-[10px] text-[#F6F5F3]/40 pt-2 border-t border-white/5">
-          <span>Limite restante após compra</span>
-          <span className={creditRemaining - totalPrice < 0 ? "text-red-400" : "text-green-400"}>
-            {formatCurrency(Math.max(0, creditRemaining))}
-          </span>
+        <div className="border-t border-border/60 pt-2 text-[10px]">
+          {creditExceeded > 0 ? (
+            <div className="space-y-1 text-muted-foreground">
+              <div className="flex justify-between">
+                <span>Limite usado</span>
+                <span>{formatCurrency(totalCredit)}</span>
+              </div>
+              <div className="flex justify-between text-primary">
+                <span>Valor a pagar por Pix na finalização</span>
+                <span>{formatCurrency(creditExceeded)}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-between text-muted-foreground">
+              <span>Limite restante após compra</span>
+              <span className="text-foreground">{formatCurrency(Math.max(0, creditRemaining))}</span>
+            </div>
+          )}
         </div>
       </div>
 
       <Link
         to="/loja/checkout"
-        className="block w-full py-3.5 rounded-xl text-sm font-bold text-center bg-[#E5541C] text-white active:scale-95 transition-transform shadow-lg shadow-[#E5541C]/25"
+        className="block w-full rounded-xl bg-primary py-3.5 text-center text-sm font-bold text-primary-foreground transition-transform shadow-lg shadow-primary/25 active:scale-95"
       >
         Finalizar pedido
       </Link>
