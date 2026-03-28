@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useCustomer } from "@/contexts/CustomerContext";
-import { formatCurrency, getWeeklyPrice } from "@/data/products";
+import { formatCurrency, getWeeklyPrice, formatWeekly } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -295,7 +295,7 @@ const CheckoutPage = () => {
                 <span className="text-primary">{formatCurrency(totalPrice)}</span>
               </div>
               <p className="mt-0.5 text-right text-[10px] text-muted-foreground">
-                ou {formatCurrency(totalWeekly)}/semana no boleto semanal
+                104 semanas de {formatCurrency(totalWeekly)}/sem
               </p>
             </div>
           </div>

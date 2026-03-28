@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "updateStatus") {
-      const validStatuses = ["pendente", "confirmado", "enviado", "entregue"];
+      const validStatuses = ["pendente", "confirmado", "enviado", "entregue", "arquivado"];
       if (!orderId || typeof orderId !== "string") {
         return new Response(JSON.stringify({ error: "orderId inválido" }), {
           status: 400,
@@ -54,6 +54,25 @@ Deno.serve(async (req) => {
       const { error } = await supabase
         .from("orders")
         .update({ status: newStatus })
+        .eq("id", orderId);
+
+      if (error) throw error;
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (action === "delete") {
+      if (!orderId || typeof orderId !== "string") {
+        return new Response(JSON.stringify({ error: "orderId inválido" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error } = await supabase
+        .from("orders")
+        .delete()
         .eq("id", orderId);
 
       if (error) throw error;
