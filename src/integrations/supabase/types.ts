@@ -28,6 +28,7 @@ export type Database = {
           nome: string
           numero: string | null
           placa: string
+          user_id: string | null
           whatsapp: string | null
         }
         Insert: {
@@ -43,6 +44,7 @@ export type Database = {
           nome: string
           numero?: string | null
           placa: string
+          user_id?: string | null
           whatsapp?: string | null
         }
         Update: {
@@ -58,6 +60,7 @@ export type Database = {
           nome?: string
           numero?: string | null
           placa?: string
+          user_id?: string | null
           whatsapp?: string | null
         }
         Relationships: []
@@ -82,6 +85,7 @@ export type Database = {
           observacoes: string | null
           status: string
           total: number
+          user_id: string | null
         }
         Insert: {
           bairro?: string | null
@@ -102,6 +106,7 @@ export type Database = {
           observacoes?: string | null
           status?: string
           total?: number
+          user_id?: string | null
         }
         Update: {
           bairro?: string | null
@@ -122,6 +127,7 @@ export type Database = {
           observacoes?: string | null
           status?: string
           total?: number
+          user_id?: string | null
         }
         Relationships: [
           {
