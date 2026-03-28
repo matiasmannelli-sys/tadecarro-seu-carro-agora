@@ -52,7 +52,7 @@ type CheckoutForm = z.infer<typeof checkoutSchema>;
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const { items, totalPrice, clearCart, totalCredit, creditExceeded } = useCart();
+  const { items, totalPrice, clearCart, totalCredit, creditExceeded, payAVista, setPayAVista, totalPriceAVista, finalTotal } = useCart();
   const { customer, isLoggedIn } = useCustomer();
   const [submitting, setSubmitting] = useState(false);
 
