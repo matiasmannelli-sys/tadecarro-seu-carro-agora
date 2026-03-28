@@ -85,10 +85,7 @@ const StorePage = () => {
                 <span className="text-[10px] text-muted-foreground line-through">{product.price}</span>
                 <span className="text-xs text-brand font-semibold">{product.installment}</span>
                 <button
-                  onClick={() =>
-                    openWA(
-                      `Olá TaDeCarro, sou ${CLIENT_NAME} (Contrato ${CONTRACT}) e quero adquirir ${product.name} pelo crediário`
-                    )
+                  onClick={() => openWA()}
                   }
                   className="w-full mt-1 py-1.5 text-[11px] font-medium rounded-lg brand-gradient text-primary-foreground active:scale-95 transition-transform flex items-center justify-center gap-1"
                 >
