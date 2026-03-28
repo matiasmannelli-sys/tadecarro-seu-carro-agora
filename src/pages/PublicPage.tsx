@@ -7,7 +7,7 @@ const cars = [
   { model: "Confort", price: "R$ 990/semana", description: "Corolla, Civic, Cruze" },
 ];
 
-const WHATSAPP_COMMERCIAL = "5511999999999";
+const WHATSAPP_URL = "https://wa.me/qr/FEIURWZ6B4QSG1";
 
 const PublicPage = () => {
   const openWhatsApp = () => {

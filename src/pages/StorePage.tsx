@@ -12,7 +12,7 @@ import imgMaquinaLavar from "@/assets/product-maquina-lavar.png";
 import imgKwid from "@/assets/car-kwid.png";
 import imgArgo from "@/assets/car-argo.png";
 
-const WHATSAPP = "5547999999999";
+const WHATSAPP_URL = "https://wa.me/qr/FEIURWZ6B4QSG1";
 const CLIENT_NAME = "João Silva";
 const CONTRACT = "#1042";
 

@@ -1,6 +1,6 @@
 import { Wrench, CheckCircle2, AlertTriangle, Camera, Clock, MessageCircle } from "lucide-react";
 
-const WHATSAPP = "5547999999999";
+const WHATSAPP_URL = "https://wa.me/qr/FEIURWZ6B4QSG1";
 const currentKm = 47600;
 const nextRevisionKm = 50000;
 const kmToNext = nextRevisionKm - currentKm;

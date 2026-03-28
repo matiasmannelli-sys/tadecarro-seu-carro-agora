@@ -37,7 +37,7 @@ const ConfirmacaoPage = () => {
         rel="noopener noreferrer"
         className="mb-3 flex w-full max-w-sm items-center justify-center gap-2 rounded-xl bg-secondary py-3.5 text-sm font-bold text-foreground transition-all active:scale-95"
       >
-        <MessageCircle className="w-4 h-4" /> Falar com atendente no WhatsApp
+        <MessageCircle className="w-4 h-4" /> Finalize sua compra
       </a>
 
       <Link
