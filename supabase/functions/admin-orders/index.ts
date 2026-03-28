@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
   try {
     const { password, action, orderId, newStatus } = await req.json();
 
-    if (password !== "tdc2026") {
+    if (password !== "080402") {
       return new Response(JSON.stringify({ error: "Senha incorreta" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
