@@ -5,7 +5,7 @@ const WHATSAPP_NUMBER = "5547999999999";
 
 const ConfirmacaoPage = () => {
   const whatsappMsg = encodeURIComponent(
-    "Olá, acabei de fazer um pedido na loja Tá de Carro e quero confirmar meu atendimento."
+    "Olá, acabei de fazer um pedido na loja TaDeCarro e quero confirmar meu atendimento."
   );
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMsg}`;
 

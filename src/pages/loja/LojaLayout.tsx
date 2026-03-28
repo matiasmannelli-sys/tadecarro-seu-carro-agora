@@ -14,7 +14,7 @@ const LojaLayout = () => {
           </main>
           <footer className="bg-[#090A2E] border-t border-white/10 py-6 px-4 text-center">
             <p className="text-xs text-[#F6F5F3]/30">
-              Tá de Carro © {new Date().getFullYear()} — Seu carro, sua conquista.
+              TaDeCarro © {new Date().getFullYear()} — Seu carro, sua conquista.
             </p>
           </footer>
         </div>
