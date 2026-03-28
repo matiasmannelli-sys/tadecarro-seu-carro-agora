@@ -3,8 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/data/products";
 import { ChevronDown, ChevronUp, Package, Clock, DollarSign, ExternalLink } from "lucide-react";
 
-const ADMIN_PASSWORD = "tdc2026";
-
 type OrderStatus = "pendente" | "confirmado" | "enviado" | "entregue";
 const STATUS_OPTIONS: OrderStatus[] = ["pendente", "confirmado", "enviado", "entregue"];
 
@@ -41,45 +39,55 @@ interface Order {
 const AdminPage = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
+  const [storedPassword, setStoredPassword] = useState("");
   const [error, setError] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
+  const handleLogin = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("admin-orders", {
+        body: { password, action: "list" },
+      });
+      if (fnError || data?.error) {
+        setError("Senha incorreta");
+        setLoading(false);
+        return;
+      }
+      setStoredPassword(password);
       setAuthenticated(true);
-      setError("");
-    } else {
-      setError("Senha incorreta");
+      setOrders((data?.orders as Order[]) || []);
+    } catch {
+      setError("Erro ao conectar");
     }
+    setLoading(false);
   };
-
-  useEffect(() => {
-    if (!authenticated) return;
-    fetchOrders();
-  }, [authenticated]);
 
   const fetchOrders = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (!error && data) setOrders(data as Order[]);
+    try {
+      const { data } = await supabase.functions.invoke("admin-orders", {
+        body: { password: storedPassword, action: "list" },
+      });
+      if (data?.orders) setOrders(data.orders as Order[]);
+    } catch {}
     setLoading(false);
   };
 
   const updateStatus = async (id: string, newStatus: OrderStatus) => {
     setUpdatingId(id);
-    const { error } = await supabase
-      .from("orders")
-      .update({ status: newStatus })
-      .eq("id", id);
-    if (!error) {
-      setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
-    }
+    try {
+      const { data } = await supabase.functions.invoke("admin-orders", {
+        body: { password: storedPassword, action: "updateStatus", orderId: id, newStatus },
+      });
+      if (data?.success) {
+        setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
+      }
+    } catch {}
     setUpdatingId(null);
   };
 
@@ -133,9 +141,10 @@ const AdminPage = () => {
           {error && <p className="text-xs text-red-400">{error}</p>}
           <button
             onClick={handleLogin}
-            className="w-full rounded-xl bg-[#E5541C] py-3 text-sm font-bold text-white transition-all active:scale-95"
+            disabled={loading}
+            className="w-full rounded-xl bg-[#E5541C] py-3 text-sm font-bold text-white transition-all active:scale-95 disabled:opacity-50"
           >
-            Entrar
+            {loading ? "Entrando..." : "Entrar"}
           </button>
         </div>
       </div>
