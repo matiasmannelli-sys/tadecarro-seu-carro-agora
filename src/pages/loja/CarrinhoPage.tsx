@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { formatCurrency, formatWeekly, getWeeklyPrice } from "@/data/products";
+import { formatCurrency, formatWeekly, getWeeklyPrice, getCashPrice } from "@/data/products";
 import CreditBar from "@/components/loja/CreditBar";
+import { Switch } from "@/components/ui/switch";
 
 const CarrinhoPage = () => {
-  const { items, removeItem, updateQuantity, totalPrice, creditRemaining, totalCredit, creditExceeded } = useCart();
-  const totalWeekly = getWeeklyPrice(totalPrice);
-  const creditApplied = Math.min(totalPrice, totalCredit);
+  const { items, removeItem, updateQuantity, totalPrice, creditRemaining, totalCredit, creditExceeded, payAVista, setPayAVista, totalPriceAVista, finalTotal } = useCart();
+  const totalWeekly = getWeeklyPrice(finalTotal);
+  const creditApplied = Math.min(finalTotal, totalCredit);
 
   if (items.length === 0) {
     return (
@@ -37,58 +38,82 @@ const CarrinhoPage = () => {
         <CreditBar compact />
       </div>
 
-      <div className="space-y-3 mb-6">
-        {items.map(({ product, quantity }) => (
-          <div key={product.id} className="flex gap-3 rounded-xl border border-border/60 bg-card/70 p-3">
-            <div className={`product-surface product-surface--${product.category} h-16 w-16 shrink-0 rounded-lg p-1.5`}>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-full object-contain"
-                style={{ filter: "contrast(1.1) saturate(1.1)" }}
-              />
+      <div className="space-y-3 mb-4">
+        {items.map(({ product, quantity }) => {
+          const unitPrice = payAVista ? getCashPrice(product.price) : product.price;
+          return (
+            <div key={product.id} className="flex gap-3 rounded-xl border border-border/60 bg-card/70 p-3">
+              <div className={`product-surface product-surface--${product.category} h-16 w-16 shrink-0 rounded-lg p-1.5`}>
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-contain"
+                  style={{ filter: "contrast(1.1) saturate(1.1)" }}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="line-clamp-1 text-xs font-semibold text-foreground">{product.name}</h3>
+                <div className="mt-0.5 text-sm font-extrabold text-primary">
+                  {payAVista
+                    ? formatCurrency(unitPrice * quantity)
+                    : formatWeekly(product.price * quantity)}
+                </div>
+                <div className="text-[10px] text-muted-foreground">
+                  {payAVista
+                    ? <span className="text-emerald-600">à vista com 20% off</span>
+                    : <>{formatCurrency(product.price * quantity)} em 104 sem</>}
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <button
+                    onClick={() => updateQuantity(product.id, quantity - 1)}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary text-foreground active:scale-90"
+                  >
+                    <Minus className="w-3 h-3" />
+                  </button>
+                  <span className="w-5 text-center text-xs font-bold text-foreground">{quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(product.id, quantity + 1)}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground active:scale-90"
+                  >
+                    <Plus className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => removeItem(product.id)}
+                    className="ml-auto p-1.5 text-destructive/70 hover:text-destructive"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="line-clamp-1 text-xs font-semibold text-foreground">{product.name}</h3>
-              <div className="mt-0.5 text-sm font-extrabold text-primary">
-                {formatCurrency(product.price * quantity)}
-              </div>
-              <div className="text-[10px] text-muted-foreground">
-                {formatWeekly(product.price * quantity)} × 104 sem
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                <button
-                  onClick={() => updateQuantity(product.id, quantity - 1)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary text-foreground active:scale-90"
-                >
-                  <Minus className="w-3 h-3" />
-                </button>
-                <span className="w-5 text-center text-xs font-bold text-foreground">{quantity}</span>
-                <button
-                  onClick={() => updateQuantity(product.id, quantity + 1)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground active:scale-90"
-                >
-                  <Plus className="w-3 h-3" />
-                </button>
-                <button
-                  onClick={() => removeItem(product.id)}
-                  className="ml-auto p-1.5 text-destructive/70 hover:text-destructive"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
+      </div>
+
+      {/* À vista toggle */}
+      <div className="mb-4 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/30 p-3">
+        <div>
+          <p className="text-xs font-semibold text-foreground">Pagar à vista com 20% de desconto</p>
+          <p className="text-[10px] text-muted-foreground">
+            De {formatCurrency(totalPrice)} por {formatCurrency(totalPriceAVista)}
+          </p>
+        </div>
+        <Switch checked={payAVista} onCheckedChange={setPayAVista} />
       </div>
 
       {/* Summary */}
       <div className="mb-4 rounded-2xl border border-border/60 bg-card/80 p-4">
+        {payAVista && (
+          <div className="mb-2 flex justify-between text-xs text-muted-foreground">
+            <span>Preço crédito</span>
+            <span className="line-through">{formatCurrency(totalPrice)}</span>
+          </div>
+        )}
         <div className="mb-2 flex justify-between text-xs text-muted-foreground">
-          <span>Subtotal</span>
-          <span>{formatCurrency(totalPrice)}</span>
+          <span>{payAVista ? "Preço à vista (−20%)" : "Subtotal"}</span>
+          <span>{formatCurrency(finalTotal)}</span>
         </div>
-        {creditExceeded > 0 && (
+        {!payAVista && creditExceeded > 0 && (
           <>
             <div className="mb-2 flex justify-between text-xs text-muted-foreground">
               <span>No crédito</span>
@@ -102,13 +127,25 @@ const CarrinhoPage = () => {
         )}
         <div className="mb-1 flex justify-between text-sm font-extrabold text-foreground">
           <span>Total</span>
-          <span className="text-primary">{formatCurrency(totalPrice)}</span>
+          <span className={payAVista ? "text-emerald-600" : "text-primary"}>{formatCurrency(finalTotal)}</span>
         </div>
-        <div className="mb-1 text-right text-[10px] text-muted-foreground">
-          ou {formatCurrency(totalWeekly)}/semana por 104 semanas
-        </div>
+        {!payAVista && (
+          <div className="mb-1 text-right text-[10px] text-muted-foreground">
+            ou {formatCurrency(totalWeekly)}/semana por 104 semanas
+          </div>
+        )}
+        {payAVista && (
+          <div className="mb-1 text-right text-[10px] text-emerald-600 font-medium">
+            Você economiza {formatCurrency(totalPrice - totalPriceAVista)}!
+          </div>
+        )}
         <div className="border-t border-border/60 pt-2 text-[10px]">
-          {creditExceeded > 0 ? (
+          {payAVista ? (
+            <div className="flex justify-between text-emerald-600">
+              <span>Pagamento único à vista via Pix</span>
+              <span>{formatCurrency(finalTotal)}</span>
+            </div>
+          ) : creditExceeded > 0 ? (
             <div className="space-y-1 text-muted-foreground">
               <div className="flex justify-between">
                 <span>Limite usado</span>

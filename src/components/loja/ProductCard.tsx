@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ShoppingCart, Check } from "lucide-react";
-import { Product, formatCurrency, formatWeekly } from "@/data/products";
+import { Product, formatCurrency, formatWeekly, formatCashPrice } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { useState } from "react";
 
@@ -53,11 +53,13 @@ const ProductCard = ({ product }: { product: Product }) => {
         <p className="text-[10px] text-gray-500">SKU: {product.sku}</p>
         <div className="mt-auto flex items-end justify-between gap-2">
           <div>
-            <span className="text-[10px] text-gray-500">{formatCurrency(product.price)} à vista</span>
             <div className="text-sm font-extrabold text-primary">
               {formatWeekly(product.price)}
             </div>
             <span className="text-[9px] text-gray-400">em 104 semanas</span>
+            <div className="text-[10px] text-emerald-600">
+              ou {formatCashPrice(product.price)} à vista
+            </div>
           </div>
 
           {inCart ? (

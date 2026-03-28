@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
-import { Product } from "@/data/products";
+import { Product, getCashPrice } from "@/data/products";
 
 interface CartItem {
   product: Product;
@@ -19,6 +19,10 @@ interface CartContextType {
   creditExceeded: number;
   withinCredit: boolean;
   itemCount: number;
+  payAVista: boolean;
+  setPayAVista: (v: boolean) => void;
+  totalPriceAVista: number;
+  finalTotal: number;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -35,6 +39,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return [];
     }
   });
+  const [payAVista, setPayAVista] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
@@ -66,10 +71,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const clearCart = useCallback(() => setItems([]), []);
+  const clearCart = useCallback(() => {
+    setItems([]);
+    setPayAVista(false);
+  }, []);
 
   const totalPrice = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
-  const creditUsed = totalPrice;
+  const totalPriceAVista = items.reduce((sum, i) => sum + getCashPrice(i.product.price) * i.quantity, 0);
+  const finalTotal = payAVista ? totalPriceAVista : totalPrice;
+  const creditUsed = finalTotal;
   const creditRemaining = TOTAL_CREDIT - creditUsed;
   const creditExceeded = Math.max(0, creditUsed - TOTAL_CREDIT);
   const withinCredit = creditExceeded === 0;
@@ -90,6 +100,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         creditExceeded,
         withinCredit,
         itemCount,
+        payAVista,
+        setPayAVista,
+        totalPriceAVista,
+        finalTotal,
       }}
     >
       {children}

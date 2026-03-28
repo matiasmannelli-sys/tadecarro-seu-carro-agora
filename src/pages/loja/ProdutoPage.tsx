@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Check, Truck, Shield } from "lucide-react";
-import { products, formatCurrency, formatWeekly } from "@/data/products";
+import { products, formatCurrency, formatWeekly, formatCashPrice } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import CreditBar from "@/components/loja/CreditBar";
 import { useState } from "react";
@@ -59,15 +59,15 @@ const ProdutoPage = () => {
         <p className="mb-5 text-xs leading-relaxed text-muted-foreground">{product.description}</p>
 
         <div className="mb-4 rounded-2xl border border-border/60 bg-card/80 p-4">
-          <div className="mb-0.5 text-xs text-muted-foreground line-through">
-            {formatCurrency(product.price)}
+          <div className="mb-0.5 text-xs text-muted-foreground">
+            Crédito: {formatCurrency(product.price)}
           </div>
           <div className="mb-0.5 text-2xl font-extrabold text-primary">
             {formatWeekly(product.price)}
           </div>
           <div className="text-[10px] text-muted-foreground">em 104 semanas</div>
-          <div className="mt-1 text-xs text-muted-foreground">
-            ou {formatCurrency(product.price)} à vista
+          <div className="mt-1.5 text-sm font-semibold text-emerald-600">
+            ou {formatCashPrice(product.price)} à vista
           </div>
         </div>
 

@@ -308,3 +308,11 @@ export function formatWeekly(price: number): string {
 export function formatCurrency(value: number): string {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
+
+export function getCashPrice(price: number): number {
+  return Math.floor(price * 0.8);
+}
+
+export function formatCashPrice(price: number): string {
+  return formatCurrency(getCashPrice(price));
+}
