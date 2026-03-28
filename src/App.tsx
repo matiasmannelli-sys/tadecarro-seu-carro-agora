@@ -57,6 +57,7 @@ const App = () => (
             <Route path="/maintenance" element={<MaintenancePage />} />
           </Route>
 
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
