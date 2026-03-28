@@ -24,7 +24,7 @@ const LojaHeader = () => {
               <span className="text-[10px] text-[#F6F5F3]/50 hidden sm:block">
                 {customer?.nome?.split(" ")[0]}
               </span>
-              <button onClick={logout} className="text-[#F6F5F3]/40 hover:text-[#F6F5F3] transition-colors">
+              <button onClick={() => logout()} className="text-[#F6F5F3]/40 hover:text-[#F6F5F3] transition-colors">
                 <LogOut className="w-4 h-4" />
               </button>
             </div>

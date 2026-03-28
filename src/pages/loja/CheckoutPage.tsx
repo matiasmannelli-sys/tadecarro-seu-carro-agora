@@ -30,8 +30,14 @@ type CheckoutForm = z.infer<typeof checkoutSchema>;
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
-  const { customer, createOrUpdateCustomer } = useCustomer();
+  const { customer, session, isLoggedIn, createOrUpdateCustomer } = useCustomer();
   const [submitting, setSubmitting] = useState(false);
+
+  // Redirect to login if not authenticated
+  if (!isLoggedIn) {
+    navigate("/loja/login", { replace: true });
+    return null;
+  }
 
   const {
     register,
@@ -94,6 +100,7 @@ const CheckoutPage = () => {
 
       const { error: orderError } = await supabase.from("orders").insert({
         customer_id: customerResult?.id || null,
+        user_id: session?.user?.id || null,
         customer_nome: data.nome,
         customer_cpf: data.cpf,
         customer_email: data.email,

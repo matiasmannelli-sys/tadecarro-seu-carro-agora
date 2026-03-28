@@ -8,9 +8,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const cadastroSchema = z.object({
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(6, "Mínimo 6 caracteres"),
   nome: z.string().min(3, "Informe seu nome completo"),
   cpf: z.string().min(11, "CPF inválido"),
-  email: z.string().email("E-mail inválido"),
   whatsapp: z.string().min(10, "WhatsApp inválido"),
   cep: z.string().min(8, "CEP inválido"),
   endereco: z.string().min(3, "Informe o endereço"),
@@ -25,7 +26,7 @@ type CadastroForm = z.infer<typeof cadastroSchema>;
 
 const CadastroPage = () => {
   const navigate = useNavigate();
-  const { createOrUpdateCustomer } = useCustomer();
+  const { signUp } = useCustomer();
   const [submitting, setSubmitting] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<CadastroForm>({
@@ -34,26 +35,16 @@ const CadastroPage = () => {
 
   const onSubmit = async (data: CadastroForm) => {
     setSubmitting(true);
-    const customer = await createOrUpdateCustomer({
-      nome: data.nome,
-      cpf: data.cpf,
-      email: data.email,
-      whatsapp: data.whatsapp,
-      cep: data.cep,
-      endereco: data.endereco,
-      numero: data.numero,
-      complemento: data.complemento || "",
-      bairro: data.bairro,
-      cidade: data.cidade,
-      placa: data.placa,
-    });
+    const { error } = await signUp(data.email, data.password);
     setSubmitting(false);
-    if (customer) {
-      toast.success("Conta criada com sucesso!");
-      navigate("/loja");
-    } else {
-      toast.error("Erro ao criar conta. Tente novamente.");
+
+    if (error) {
+      toast.error(error);
+      return;
     }
+
+    toast.success("Conta criada! Verifique seu e-mail para confirmar o cadastro.");
+    navigate("/loja/login");
   };
 
   const inputClass =
@@ -71,6 +62,22 @@ const CadastroPage = () => {
       <p className="text-xs text-[#F6F5F3]/40 mb-5">Preencha seus dados para facilitar suas compras.</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <section>
+          <h2 className="text-xs font-bold text-[#E5541C] uppercase tracking-wider mb-3">Acesso</h2>
+          <div className="space-y-3">
+            <div>
+              <label className={labelClass}>E-mail</label>
+              <input {...register("email")} type="email" className={inputClass} />
+              {errors.email && <p className={errorClass}>{errors.email.message}</p>}
+            </div>
+            <div>
+              <label className={labelClass}>Senha</label>
+              <input {...register("password")} type="password" className={inputClass} placeholder="Mínimo 6 caracteres" />
+              {errors.password && <p className={errorClass}>{errors.password.message}</p>}
+            </div>
+          </div>
+        </section>
+
         <section>
           <h2 className="text-xs font-bold text-[#E5541C] uppercase tracking-wider mb-3">Dados pessoais</h2>
           <div className="space-y-3">
@@ -90,11 +97,6 @@ const CadastroPage = () => {
                 <input {...register("whatsapp")} className={inputClass} placeholder="(00) 00000-0000" />
                 {errors.whatsapp && <p className={errorClass}>{errors.whatsapp.message}</p>}
               </div>
-            </div>
-            <div>
-              <label className={labelClass}>E-mail</label>
-              <input {...register("email")} type="email" className={inputClass} />
-              {errors.email && <p className={errorClass}>{errors.email.message}</p>}
             </div>
             <div>
               <label className={labelClass}>Placa do veículo</label>
@@ -152,6 +154,11 @@ const CadastroPage = () => {
         >
           {submitting ? "Criando conta..." : "Criar minha conta"}
         </button>
+
+        <p className="text-center text-xs text-[#F6F5F3]/40">
+          Já tem conta?{" "}
+          <Link to="/loja/login" className="text-[#E5541C] font-semibold">Entrar</Link>
+        </p>
       </form>
     </div>
   );
