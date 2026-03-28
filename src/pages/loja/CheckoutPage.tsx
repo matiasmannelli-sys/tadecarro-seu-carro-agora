@@ -198,7 +198,7 @@ const CheckoutPage = () => {
             </div>
             <div>
               <label className={labelClass}>Placa do veículo</label>
-              <input {...register("placa")} className={`${inputClass} uppercase`} placeholder="ABC1D23" maxLength={7} />
+              <input {...register("placa")} onChange={handleMaskedChange("placa", maskPlaca)} className={`${inputClass} uppercase`} placeholder="ABC1D23" maxLength={7} />
               {errors.placa && <p className={errorClass}>{errors.placa.message}</p>}
             </div>
           </div>
