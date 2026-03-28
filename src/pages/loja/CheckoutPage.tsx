@@ -56,16 +56,17 @@ const CheckoutPage = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<CheckoutForm>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
       nome: customer?.nome || "",
-      cpf: customer?.cpf || "",
-      whatsapp: customer?.whatsapp || "",
+      cpf: customer?.cpf ? maskCPF(customer.cpf) : "",
+      whatsapp: customer?.whatsapp ? maskPhone(customer.whatsapp) : "",
       email: customer?.email || "",
-      placa: customer?.placa || "",
-      cep: customer?.cep || "",
+      placa: customer?.placa ? maskPlaca(customer.placa) : "",
+      cep: customer?.cep ? maskCEP(customer.cep) : "",
       endereco: customer?.endereco || "",
       numero: customer?.numero || "",
       complemento: customer?.complemento || "",
@@ -74,6 +75,13 @@ const CheckoutPage = () => {
       acceptPixExcedente: false,
     },
   });
+
+  const handleMaskedChange = (field: keyof CheckoutForm, mask: (v: string) => string) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const masked = mask(e.target.value);
+      e.target.value = masked;
+      setValue(field, masked, { shouldValidate: true });
+    };
 
   if (items.length === 0) {
     return (
