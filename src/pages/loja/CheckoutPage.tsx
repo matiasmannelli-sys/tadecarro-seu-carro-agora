@@ -56,10 +56,6 @@ const CheckoutPage = () => {
     },
   });
 
-  const {
-    watch,
-  } = useForm<CheckoutForm>;
-
   if (items.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">

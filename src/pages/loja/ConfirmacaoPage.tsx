@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { CheckCircle2, MessageCircle, ShoppingBag } from "lucide-react";
+import { formatCurrency } from "@/data/products";
 
 const WHATSAPP_NUMBER = "5547999999999";
 
