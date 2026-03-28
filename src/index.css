@@ -43,15 +43,6 @@
     --navy-light: 220 50% 30%;
     --navy-dark: 220 65% 12%;
 
-    --product-surface-tvs: 215 55% 22%;
-    --product-surface-ar-condicionado: 205 60% 25%;
-    --product-surface-geladeiras: 220 50% 20%;
-    --product-surface-freezers: 210 55% 24%;
-    --product-surface-cooktops: 225 45% 22%;
-    --product-surface-airfryers: 218 50% 26%;
-    --product-surface-lava-loucas: 212 55% 23%;
-    --product-surface-ferramentas: 222 48% 21%;
-
     --sidebar-background: 220 30% 6%;
     --sidebar-foreground: 210 20% 85%;
     --sidebar-primary: 20 92% 47%;
@@ -119,68 +110,40 @@
   }
 
   .product-surface {
-    @apply relative flex items-center justify-center overflow-hidden border border-border/40;
-    background-image:
-      radial-gradient(circle at 50% 18%, hsl(var(--foreground) / 0.18), transparent 38%),
-      linear-gradient(145deg, hsl(var(--card)), hsl(var(--secondary)));
-  }
-
-  .product-surface::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 22% 22%, hsl(var(--foreground) / 0.08), transparent 24%),
-      linear-gradient(180deg, transparent 0%, hsl(var(--background) / 0.08) 100%);
-    pointer-events: none;
+    @apply relative flex items-center justify-center overflow-hidden;
+    background: hsl(30, 15%, 88%);
   }
 
   .product-surface--tvs {
-    background-image:
-      radial-gradient(circle at 50% 18%, hsl(var(--foreground) / 0.18), transparent 38%),
-      linear-gradient(145deg, hsl(var(--product-surface-tvs)), hsl(var(--secondary)));
+    background: linear-gradient(145deg, hsl(220, 15%, 85%), hsl(220, 12%, 90%));
   }
 
   .product-surface--ar-condicionado {
-    background-image:
-      radial-gradient(circle at 50% 18%, hsl(var(--foreground) / 0.18), transparent 38%),
-      linear-gradient(145deg, hsl(var(--product-surface-ar-condicionado)), hsl(var(--secondary)));
+    background: linear-gradient(145deg, hsl(200, 20%, 88%), hsl(200, 15%, 92%));
   }
 
   .product-surface--geladeiras {
-    background-image:
-      radial-gradient(circle at 50% 18%, hsl(var(--foreground) / 0.18), transparent 38%),
-      linear-gradient(145deg, hsl(var(--product-surface-geladeiras)), hsl(var(--secondary)));
+    background: linear-gradient(145deg, hsl(35, 15%, 87%), hsl(35, 12%, 91%));
   }
 
   .product-surface--freezers {
-    background-image:
-      radial-gradient(circle at 50% 18%, hsl(var(--foreground) / 0.18), transparent 38%),
-      linear-gradient(145deg, hsl(var(--product-surface-freezers)), hsl(var(--secondary)));
+    background: linear-gradient(145deg, hsl(35, 15%, 87%), hsl(35, 12%, 91%));
   }
 
   .product-surface--cooktops {
-    background-image:
-      radial-gradient(circle at 50% 18%, hsl(var(--foreground) / 0.18), transparent 38%),
-      linear-gradient(145deg, hsl(var(--product-surface-cooktops)), hsl(var(--secondary)));
+    background: linear-gradient(145deg, hsl(30, 20%, 85%), hsl(30, 15%, 90%));
   }
 
   .product-surface--airfryers {
-    background-image:
-      radial-gradient(circle at 50% 18%, hsl(var(--foreground) / 0.18), transparent 38%),
-      linear-gradient(145deg, hsl(var(--product-surface-airfryers)), hsl(var(--secondary)));
+    background: linear-gradient(145deg, hsl(30, 20%, 85%), hsl(30, 15%, 90%));
   }
 
   .product-surface--lava-loucas {
-    background-image:
-      radial-gradient(circle at 50% 18%, hsl(var(--foreground) / 0.18), transparent 38%),
-      linear-gradient(145deg, hsl(var(--product-surface-lava-loucas)), hsl(var(--secondary)));
+    background: linear-gradient(145deg, hsl(35, 15%, 87%), hsl(35, 12%, 91%));
   }
 
   .product-surface--ferramentas {
-    background-image:
-      radial-gradient(circle at 50% 18%, hsl(var(--foreground) / 0.18), transparent 38%),
-      linear-gradient(145deg, hsl(var(--product-surface-ferramentas)), hsl(var(--secondary)));
+    background: linear-gradient(145deg, hsl(40, 12%, 80%), hsl(40, 10%, 85%));
   }
 
   .car-glow {

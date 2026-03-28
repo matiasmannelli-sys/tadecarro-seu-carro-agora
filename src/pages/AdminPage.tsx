@@ -1,16 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/data/products";
-import { ChevronDown, ChevronUp, Package, Clock, DollarSign, ExternalLink } from "lucide-react";
+import { ChevronDown, ChevronUp, Package, Clock, DollarSign, ExternalLink, Trash2, Archive, Eye, EyeOff, X } from "lucide-react";
 
 type OrderStatus = "pendente" | "confirmado" | "enviado" | "entregue";
 const STATUS_OPTIONS: OrderStatus[] = ["pendente", "confirmado", "enviado", "entregue"];
 
-const STATUS_COLORS: Record<OrderStatus, string> = {
+const STATUS_COLORS: Record<string, string> = {
   pendente: "bg-yellow-500/20 text-yellow-400",
   confirmado: "bg-blue-500/20 text-blue-400",
   enviado: "bg-purple-500/20 text-purple-400",
   entregue: "bg-green-500/20 text-green-400",
+  arquivado: "bg-white/10 text-white/40",
 };
 
 interface Order {
@@ -45,6 +46,14 @@ const AdminPage = () => {
   const [loading, setLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
+  const [dateFrom, setDateFrom] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d.toISOString().slice(0, 10);
+  });
+  const [dateTo, setDateTo] = useState(() => new Date().toISOString().slice(0, 10));
+  const [dateFilterActive, setDateFilterActive] = useState(true);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -78,7 +87,7 @@ const AdminPage = () => {
     setLoading(false);
   };
 
-  const updateStatus = async (id: string, newStatus: OrderStatus) => {
+  const updateStatus = async (id: string, newStatus: string) => {
     setUpdatingId(id);
     try {
       const { data } = await supabase.functions.invoke("admin-orders", {
@@ -91,12 +100,47 @@ const AdminPage = () => {
     setUpdatingId(null);
   };
 
+  const deleteOrder = async (id: string) => {
+    if (!window.confirm("Tem certeza que deseja excluir este pedido?")) return;
+    setUpdatingId(id);
+    try {
+      const { data } = await supabase.functions.invoke("admin-orders", {
+        body: { password: storedPassword, action: "delete", orderId: id },
+      });
+      if (data?.success) {
+        setOrders((prev) => prev.filter((o) => o.id !== id));
+      }
+    } catch {}
+    setUpdatingId(null);
+  };
+
+  const archiveOrder = async (id: string) => {
+    await updateStatus(id, "arquivado");
+  };
+
+  const filteredOrders = useMemo(() => {
+    let result = orders;
+    if (!showArchived) {
+      result = result.filter((o) => o.status !== "arquivado");
+    }
+    if (dateFilterActive && dateFrom && dateTo) {
+      const from = new Date(dateFrom + "T00:00:00");
+      const to = new Date(dateTo + "T23:59:59");
+      result = result.filter((o) => {
+        if (!o.created_at) return false;
+        const d = new Date(o.created_at);
+        return d >= from && d <= to;
+      });
+    }
+    return result;
+  }, [orders, showArchived, dateFilterActive, dateFrom, dateTo]);
+
   const stats = useMemo(() => {
-    const total = orders.length;
-    const pendentes = orders.filter((o) => o.status === "pendente").length;
-    const valorTotal = orders.reduce((s, o) => s + o.total, 0);
+    const total = filteredOrders.length;
+    const pendentes = filteredOrders.filter((o) => o.status === "pendente").length;
+    const valorTotal = filteredOrders.reduce((s, o) => s + o.total, 0);
     return { total, pendentes, valorTotal };
-  }, [orders]);
+  }, [filteredOrders]);
 
   const formatDate = (d: string | null) => {
     if (!d) return "—";
@@ -153,7 +197,52 @@ const AdminPage = () => {
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] px-4 py-6">
-      <h1 className="mb-6 text-xl font-extrabold text-white">Painel de Pedidos</h1>
+      <h1 className="mb-4 text-xl font-extrabold text-white">Painel de Pedidos</h1>
+
+      {/* Date filter */}
+      <div className="mb-4 rounded-xl border border-white/10 bg-white/5 p-3">
+        <div className="flex flex-wrap items-end gap-3">
+          <div>
+            <label className="mb-1 block text-[10px] text-white/50">De</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => { setDateFrom(e.target.value); setDateFilterActive(true); }}
+              className="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#E5541C]/50"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[10px] text-white/50">Até</label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => { setDateTo(e.target.value); setDateFilterActive(true); }}
+              className="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#E5541C]/50"
+            />
+          </div>
+          {dateFilterActive && (
+            <button
+              onClick={() => setDateFilterActive(false)}
+              className="flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1.5 text-[10px] text-white/60 hover:bg-white/20"
+            >
+              <X className="h-3 w-3" /> Limpar filtro
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Show archived toggle */}
+      <div className="mb-4 flex items-center gap-2">
+        <button
+          onClick={() => setShowArchived(!showArchived)}
+          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-semibold transition-all ${
+            showArchived ? "bg-[#E5541C] text-white" : "bg-white/10 text-white/60 hover:bg-white/20"
+          }`}
+        >
+          {showArchived ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+          {showArchived ? "Mostrando arquivados" : "Mostrar arquivados"}
+        </button>
+      </div>
 
       {/* Stats */}
       <div className="mb-6 grid grid-cols-3 gap-3">
@@ -176,11 +265,11 @@ const AdminPage = () => {
 
       {loading ? (
         <p className="text-center text-sm text-white/50">Carregando...</p>
-      ) : orders.length === 0 ? (
+      ) : filteredOrders.length === 0 ? (
         <p className="text-center text-sm text-white/50">Nenhum pedido encontrado.</p>
       ) : (
         <div className="space-y-3">
-          {orders.map((order) => {
+          {filteredOrders.map((order) => {
             const expanded = expandedId === order.id;
             const items = parseItems(order.items);
             const whatsLink = formatWhatsappLink(order.customer_whatsapp);
@@ -201,7 +290,7 @@ const AdminPage = () => {
                         {order.customer_nome || "Sem nome"}
                       </span>
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_COLORS[order.status as OrderStatus] || "bg-white/10 text-white/60"}`}
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_COLORS[order.status] || "bg-white/10 text-white/60"}`}
                       >
                         {order.status}
                       </span>
@@ -318,6 +407,26 @@ const AdminPage = () => {
                           </button>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Actions: archive & delete */}
+                    <div className="flex gap-2 pt-1 border-t border-white/10">
+                      {order.status !== "arquivado" && (
+                        <button
+                          onClick={() => archiveOrder(order.id)}
+                          disabled={updatingId === order.id}
+                          className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-[10px] font-semibold text-white/60 hover:bg-white/20 disabled:opacity-40"
+                        >
+                          <Archive className="h-3 w-3" /> Esconder
+                        </button>
+                      )}
+                      <button
+                        onClick={() => deleteOrder(order.id)}
+                        disabled={updatingId === order.id}
+                        className="flex items-center gap-1.5 rounded-lg bg-red-500/10 px-3 py-1.5 text-[10px] font-semibold text-red-400 hover:bg-red-500/20 disabled:opacity-40"
+                      >
+                        <Trash2 className="h-3 w-3" /> Excluir
+                      </button>
                     </div>
                   </div>
                 )}

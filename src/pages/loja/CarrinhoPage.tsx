@@ -41,7 +41,12 @@ const CarrinhoPage = () => {
         {items.map(({ product, quantity }) => (
           <div key={product.id} className="flex gap-3 rounded-xl border border-border/60 bg-card/70 p-3">
             <div className={`product-surface product-surface--${product.category} h-16 w-16 shrink-0 rounded-lg p-1.5`}>
-              <img src={product.image} alt={product.name} className="w-full h-full object-contain" />
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-contain"
+                style={{ filter: "contrast(1.1) saturate(1.1)" }}
+              />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="line-clamp-1 text-xs font-semibold text-foreground">{product.name}</h3>
@@ -49,7 +54,7 @@ const CarrinhoPage = () => {
                 {formatCurrency(product.price * quantity)}
               </div>
               <div className="text-[10px] text-muted-foreground">
-                {formatWeekly(product.price * quantity)}
+                {formatWeekly(product.price * quantity)} × 104 sem
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <button
@@ -99,8 +104,8 @@ const CarrinhoPage = () => {
           <span>Total</span>
           <span className="text-primary">{formatCurrency(totalPrice)}</span>
         </div>
-        <div className="mb-3 text-right text-[10px] text-muted-foreground">
-          ou {formatCurrency(totalWeekly)}/semana
+        <div className="mb-1 text-right text-[10px] text-muted-foreground">
+          ou {formatCurrency(totalWeekly)}/semana por 104 semanas
         </div>
         <div className="border-t border-border/60 pt-2 text-[10px]">
           {creditExceeded > 0 ? (
