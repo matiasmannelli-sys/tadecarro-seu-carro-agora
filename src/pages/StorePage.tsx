@@ -86,7 +86,7 @@ const StorePage = () => {
                 <span className="text-xs text-brand font-semibold">{product.installment}</span>
                 <button
                   onClick={() => openWA()}
-                  }
+                  className="w-full mt-1 py-1.5 text-[11px] font-medium rounded-lg brand-gradient text-primary-foreground active:scale-95 transition-transform flex items-center justify-center gap-1"
                   className="w-full mt-1 py-1.5 text-[11px] font-medium rounded-lg brand-gradient text-primary-foreground active:scale-95 transition-transform flex items-center justify-center gap-1"
                 >
                   <MessageCircle className="w-3 h-3" />
