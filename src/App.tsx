@@ -23,6 +23,8 @@ import CheckoutPage from "./pages/loja/CheckoutPage";
 import ConfirmacaoPage from "./pages/loja/ConfirmacaoPage";
 import LoginPlacaPage from "./pages/loja/LoginPlacaPage";
 import CadastroPage from "./pages/loja/CadastroPage";
+import EsqueciSenhaPage from "./pages/loja/EsqueciSenhaPage";
+import RedefinirSenhaPage from "./pages/loja/RedefinirSenhaPage";
 
 const queryClient = new QueryClient();
 
