@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ShoppingCart, Check } from "lucide-react";
-import { Product, formatCurrency, formatWeekly } from "@/data/products";
+import { Product, formatCurrency, formatWeekly, formatCashPrice } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { useState } from "react";
 
