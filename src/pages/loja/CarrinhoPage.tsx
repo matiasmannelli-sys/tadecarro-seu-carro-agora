@@ -6,7 +6,7 @@ import CreditBar from "@/components/loja/CreditBar";
 
 const CarrinhoPage = () => {
   const { items, removeItem, updateQuantity, totalPrice, creditRemaining, totalCredit, creditExceeded } = useCart();
-  const totalInstallment = getInstallmentPrice(totalPrice, 24);
+  const totalWeekly = getWeeklyPrice(totalPrice);
   const creditApplied = Math.min(totalPrice, totalCredit);
 
   if (items.length === 0) {
