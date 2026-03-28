@@ -2,13 +2,24 @@ import { Link, useLocation } from "react-router-dom";
 import { CheckCircle2, MessageCircle, ShoppingBag } from "lucide-react";
 import { formatCurrency } from "@/data/products";
 
-const WHATSAPP_URL = "https://wa.me/qr/FEIURWZ6B4QSG1";
+const WHATSAPP_NUMBER = "5554984480006";
 
 const ConfirmacaoPage = () => {
   const location = useLocation();
   const creditExceeded = Number(location.state?.creditExceeded || 0);
   const hasPix = creditExceeded > 0;
-  const whatsappUrl = WHATSAPP_URL;
+
+  const customerName = location.state?.customerName || "Cliente";
+  const cartItems: { name: string; quantity: number }[] = location.state?.cartItems || [];
+  const totalPrice = Number(location.state?.totalPrice || 0);
+  const paymentMethod = location.state?.paymentMethod || "boleto_semanal";
+
+  const itemsList = cartItems.map((i) => `${i.quantity}x ${i.name}`).join(", ");
+  const methodLabel = paymentMethod === "credito_pix" ? "crédito + pix" : "boleto semanal";
+
+  const message = `Olá! Sou ${customerName} e acabei de fazer um pedido na loja TaDeCarro. Meu pedido: ${itemsList}. Total: ${formatCurrency(totalPrice)}. Método: ${methodLabel}. Aguardo confirmação!`;
+
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
@@ -42,7 +53,7 @@ const ConfirmacaoPage = () => {
 
       <Link
         to="/loja"
-          className="flex w-full max-w-sm items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground transition-all shadow-lg shadow-primary/25 active:scale-95"
+        className="flex w-full max-w-sm items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground transition-all shadow-lg shadow-primary/25 active:scale-95"
       >
         <ShoppingBag className="w-4 h-4" /> Continuar comprando
       </Link>

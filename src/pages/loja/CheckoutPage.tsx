@@ -146,6 +146,12 @@ const CheckoutPage = () => {
           orderId,
           creditExceeded,
           paymentMethod: creditExceeded > 0 ? "credito_pix" : "boleto_semanal",
+          customerName: data.nome,
+          cartItems: items.map(({ product, quantity }) => ({
+            name: product.name,
+            quantity,
+          })),
+          totalPrice,
         },
       });
     } catch (err) {
