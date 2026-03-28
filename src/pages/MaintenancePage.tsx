@@ -19,8 +19,8 @@ const maintenanceHistory = [
 ];
 
 const MaintenancePage = () => {
-  const openWA = (msg: string) => {
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+  const openWA = () => {
+    window.open(WHATSAPP_URL, "_blank");
   };
 
   return (

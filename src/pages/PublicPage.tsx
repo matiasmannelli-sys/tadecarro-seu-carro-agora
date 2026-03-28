@@ -11,8 +11,7 @@ const WHATSAPP_URL = "https://wa.me/qr/FEIURWZ6B4QSG1";
 
 const PublicPage = () => {
   const openWhatsApp = () => {
-    const msg = encodeURIComponent("Olá! Quero saber mais sobre locação de carros para motorista de aplicativo.");
-    window.open(`https://wa.me/${WHATSAPP_COMMERCIAL}?text=${msg}`, "_blank");
+    window.open(WHATSAPP_URL, "_blank");
   };
 
   return (
