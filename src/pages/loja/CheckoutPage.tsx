@@ -182,12 +182,12 @@ const CheckoutPage = () => {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>CPF</label>
-                <input {...register("cpf")} className={inputClass} />
+                <input {...register("cpf")} onChange={handleMaskedChange("cpf", maskCPF)} className={inputClass} placeholder="000.000.000-00" inputMode="numeric" />
                 {errors.cpf && <p className={errorClass}>{errors.cpf.message}</p>}
               </div>
               <div>
                 <label className={labelClass}>WhatsApp</label>
-                <input {...register("whatsapp")} className={inputClass} placeholder="(00) 00000-0000" />
+                <input {...register("whatsapp")} onChange={handleMaskedChange("whatsapp", maskPhone)} className={inputClass} placeholder="(00) 00000-0000" inputMode="tel" />
                 {errors.whatsapp && <p className={errorClass}>{errors.whatsapp.message}</p>}
               </div>
             </div>
